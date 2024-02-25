@@ -12,7 +12,7 @@ namespace LunarLander.Views.HighScores
     public class HighScoresView : GameStateView
     {
         public override void loadContent(ContentManager contentManager)
-        {;
+        {
         }
 
         public override GameStateEnum processInput(GameTime gameTime)

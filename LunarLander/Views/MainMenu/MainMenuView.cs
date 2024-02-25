@@ -35,7 +35,6 @@ namespace LunarLander.Views.MainMenu
 
         public override GameStateEnum processInput(GameTime gameTime)
         {
-            // This is the technique I'm using to ensure one keypress makes one menu navigation move
             m_inputKeyboard.Update();
             if (Keyboard.GetState().IsKeyDown(Keys.Enter))
             {
