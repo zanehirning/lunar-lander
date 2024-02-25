@@ -44,7 +44,7 @@ namespace LunarLander.Views.MainMenu
                     case MenuStateEnum.StartGame: return GameStateEnum.Game;
                     case MenuStateEnum.Credits: return GameStateEnum.Credits;
                     case MenuStateEnum.HighScores: return GameStateEnum.HighScores;
-                    case MenuStateEnum.Exit: return GameStateEnum.Game;
+                    case MenuStateEnum.Exit: return GameStateEnum.Exit;
                     default: return GameStateEnum.MainMenu;
                 }
             }
