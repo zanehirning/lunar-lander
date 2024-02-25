@@ -28,40 +28,36 @@ namespace LunarLander.Views.Game.Terrain
             terrainPoints.Sort((point1, point2) => point1.x.CompareTo(point2.x));
             List<Point> sortedPoints = terrainPoints;
 
-            midpointDisplacement(sortedPoints[0], sortedPoints[1], 10, rand); //left end, start landing
-            midpointDisplacement(sortedPoints[2], sortedPoints[3], 10, rand); // end landing, start landing 2 or right end
+            midpointDisplacement(sortedPoints[0], sortedPoints[1], 10, 1,  rand); //left end, start landing
+            midpointDisplacement(sortedPoints[2], sortedPoints[3], 10, 1, rand); // end landing, start landing 2 or right end
             if (level == 1) 
             {
-                midpointDisplacement(sortedPoints[4], sortedPoints[5], 10, rand);
+                midpointDisplacement(sortedPoints[4], sortedPoints[5], 10, 1, rand);
             }
         }
 
-        public void midpointDisplacement(Point left, Point right, int count, Random rand)
+        public void midpointDisplacement(Point left, Point right, int count, double s, Random rand)
         {
             if (count == 0) return;
 
             double midPointX = (left.x + right.x) / 2;
             double midPointY = (left.y + right.y) / 2;
-
-            double s = .7; //surface roughness
             double r = s * (gaussianRnd(rand) * Math.Abs(left.x - right.x));
-
+            r = r > BUFFER_HEIGHT / 5 ? BUFFER_HEIGHT / 5 : r; //put a max displacement
+            r = r < -BUFFER_HEIGHT / 5 ? -BUFFER_HEIGHT / 45 : r;
             double pointHeight = midPointY + r;
-
             pointHeight = pointHeight < 50 ? 50 : pointHeight;
-            Debug.WriteLine(pointHeight);
-
             Point newPoint = new Point(midPointX, pointHeight);
             this.terrainPoints.Add(newPoint);
-            midpointDisplacement(left, newPoint, count-1, rand);
-            midpointDisplacement(right, newPoint, count-1, rand);
+            midpointDisplacement(left, newPoint, count-1, s - .1, rand);
+            midpointDisplacement(right, newPoint, count-1, s - .1, rand);
         }
 
         public void createEndpoints(Random rand)
         {
-            int leftEndY = rand.Next(BUFFER_HEIGHT / 2) + 20;
+            int leftEndY = rand.Next(BUFFER_HEIGHT / 4) + 20;
             Point leftEndPoint = new Point(0, leftEndY);
-            int rightEndY = rand.Next(BUFFER_HEIGHT / 2) + 20;
+            int rightEndY = rand.Next(BUFFER_HEIGHT / 4) + 20;
             Point rightEndPoint = new Point(BUFFER_WIDTH, rightEndY);
             terrainPoints.Add(leftEndPoint);
             terrainPoints.Add(rightEndPoint);
@@ -73,7 +69,7 @@ namespace LunarLander.Views.Game.Terrain
             // We subtract 2 * buffer. We will need to add the buffer once to ensure our x is > buffer. Subtract two so x wont be == BUFFER_WIDTH
             int leftX = rand.Next(BUFFER_WIDTH - (2 * buffer)) + buffer;
             int rightX = leftX + LANDING_POINT_WIDTH;
-            int landingY = rand.Next(BUFFER_HEIGHT / 2) + 20;
+            int landingY = rand.Next(BUFFER_HEIGHT / 4) + 20;
             Point leftPoint = new Point(leftX, landingY);
             Point rightPoint = new Point(rightX, landingY);
             terrainPoints.Add(leftPoint);
@@ -86,7 +82,7 @@ namespace LunarLander.Views.Game.Terrain
             //I've created this before, but I took the solution from https://stackoverflow.com/questions/218060/random-gaussian-variables this time
             double u1 = 1.0 - rand.NextDouble();
             double u2 = 1.0 - rand.NextDouble();
-            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Cos(2.0 * Math.PI * u2);
             return randStdNormal;
         }
         public List<Point> getPoints()
