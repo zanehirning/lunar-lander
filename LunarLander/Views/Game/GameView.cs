@@ -42,31 +42,6 @@ namespace LunarLander.Views.Game
                 m_vertsTriStrip[i + 1].Color = Color.White;
                 m_indexTriStrip[i + 1] = i + 1;
             }
-
-            //foreach (TerrainGenerator.Point point in points)
-            //{
-            //    Debug.WriteLine($"{point.x}, {m_graphics.PreferredBackBufferHeight - point.y}");
-            //}
-
-            //m_vertsTriStrip = new VertexPositionColor[5];
-            //m_vertsTriStrip[0].Position = new Vector3(200, 600, 0);
-            //m_vertsTriStrip[0].Color = Color.Red;
-            //m_vertsTriStrip[1].Position = new Vector3(300, 400, 0);
-            //m_vertsTriStrip[1].Color = Color.Green;
-            //m_vertsTriStrip[2].Position = new Vector3(400, 600, 0);
-            //m_vertsTriStrip[2].Color = Color.Blue;
-            //m_vertsTriStrip[3].Position = new Vector3(500, 400, 0);
-            //m_vertsTriStrip[3].Color = Color.Red;
-            //m_vertsTriStrip[4].Position = new Vector3(600, 600, 0);
-            //m_vertsTriStrip[4].Color = Color.Green;
-
-            //m_indexTriStrip = new int[6];
-            //m_indexTriStrip[0] = 0;
-            //m_indexTriStrip[1] = 1;
-            //m_indexTriStrip[2] = 2;
-            //m_indexTriStrip[3] = 3;
-            //m_indexTriStrip[4] = 4;
-
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
@@ -83,11 +58,10 @@ namespace LunarLander.Views.Game
                 pass.Apply();
                 m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
                     PrimitiveType.LineStrip,
-                    m_vertsTriStrip, 0, m_vertsTriStrip.Length,
+                    m_vertsTriStrip, 0, m_vertsTriStrip.Length-1,
                     m_indexTriStrip, 0, m_indexTriStrip.Length - 1
                 );
             }
-            Debug.WriteLine("Drawn");
             m_spriteBatch.End();
         }
 
