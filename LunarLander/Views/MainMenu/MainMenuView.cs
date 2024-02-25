@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LunarLander.Input;
 using LunarLander.State;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -20,12 +21,17 @@ namespace LunarLander.Views.MainMenu
         private Rectangle m_rectPlanet;
         private MenuStateEnum m_currentSelection = MenuStateEnum.StartGame;
         private bool m_waitForKeyRelease = false;
+        private KeyboardInput m_inputKeyboard;
 
         public override void loadContent(ContentManager contentManager)
         {
             m_texPlanet = contentManager.Load<Texture2D>("Images/Brahe_Sprite");
             m_menuFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
             m_menuSelectFont = contentManager.Load<SpriteFont>("Fonts/anta-regular-select");
+
+            m_inputKeyboard = new KeyboardInput();
+            m_inputKeyboard.registerCommand(Keys.Down, true, new IInputDevice.CommandDelegate(menuDown));
+            m_inputKeyboard.registerCommand(Keys.Up, true, new IInputDevice.CommandDelegate(menuUp));
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
@@ -34,16 +40,7 @@ namespace LunarLander.Views.MainMenu
             if (!m_waitForKeyRelease)
             {
                 // Arrow keys to navigate the menu
-                if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                {
-                    m_currentSelection = m_currentSelection + 1;
-                    m_waitForKeyRelease = true;
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.Up))
-                {
-                    m_currentSelection = m_currentSelection - 1;
-                    m_waitForKeyRelease = true;
-                }
+                m_inputKeyboard.Update();
 
                 // If enter is pressed, return the appropriate new state
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuStateEnum.StartGame)
@@ -75,6 +72,26 @@ namespace LunarLander.Views.MainMenu
         {
         }
 
+        #region Input
+        private void menuDown()
+        {
+            if (m_currentSelection != MenuStateEnum.Exit)
+            {
+                m_currentSelection = m_currentSelection + 1;
+                m_waitForKeyRelease = true;
+            }
+        }
+        private void menuUp()
+        {
+            if (m_currentSelection != MenuStateEnum.StartGame)
+            {
+                m_currentSelection = m_currentSelection - 1;
+                m_waitForKeyRelease = true;
+            }
+        }
+        #endregion
+
+        #region Drawing
         public override void render(GameTime gameTime)
         {
             m_spriteBatch.Begin();
@@ -109,5 +126,6 @@ namespace LunarLander.Views.MainMenu
                     Color.White
                 );
         }
+        #endregion
     }
 }
