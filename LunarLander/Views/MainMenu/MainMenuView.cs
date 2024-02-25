@@ -15,12 +15,15 @@ namespace LunarLander.Views.MainMenu
     {
         private SpriteFont m_menuFont;
         private SpriteFont m_menuSelectFont;
-
+        
+        private Texture2D m_texPlanet;
+        private Rectangle m_rectPlanet;
         private MenuStateEnum m_currentSelection = MenuStateEnum.StartGame;
         private bool m_waitForKeyRelease = false;
 
         public override void loadContent(ContentManager contentManager)
         {
+            m_texPlanet = contentManager.Load<Texture2D>("Images/Brahe_Sprite");
             m_menuFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
             m_menuSelectFont = contentManager.Load<SpriteFont>("Fonts/anta-regular-select");
         }
@@ -75,7 +78,8 @@ namespace LunarLander.Views.MainMenu
         public override void render(GameTime gameTime)
         {
             m_spriteBatch.Begin();
-            float bottom = drawMenuItem(m_currentSelection == MenuStateEnum.StartGame ? m_menuSelectFont : m_menuFont, "Start Game", 200, m_currentSelection == MenuStateEnum.StartGame ? new Color(1, 59, 89) : Color.White);
+            drawPlanet();
+            float bottom = drawMenuItem(m_currentSelection == MenuStateEnum.StartGame ? m_menuSelectFont : m_menuFont, "Start Game", m_graphics.PreferredBackBufferHeight / 2, m_currentSelection == MenuStateEnum.StartGame ? new Color(1, 59, 89) : Color.White);
             bottom = drawMenuItem(m_currentSelection == MenuStateEnum.HighScores ? m_menuSelectFont : m_menuFont, "High Scores", bottom, m_currentSelection == MenuStateEnum.HighScores ? new Color(1, 59, 89) : Color.White);
             bottom = drawMenuItem(m_currentSelection == MenuStateEnum.Credits ? m_menuSelectFont : m_menuFont, "Credits", bottom, m_currentSelection == MenuStateEnum.Credits ? new Color(1, 59, 89) : Color.White);
             drawMenuItem(m_currentSelection == MenuStateEnum.Exit ? m_menuSelectFont : m_menuFont, "Exit", bottom, m_currentSelection == MenuStateEnum.Exit ? new Color(1, 59, 89) : Color.White);            
@@ -92,6 +96,18 @@ namespace LunarLander.Views.MainMenu
                 color
             );
             return y + stringSize.Y;
+        }
+
+        private void drawPlanet()
+        {
+            int planetSize = m_graphics.PreferredBackBufferHeight / 3; 
+            m_rectPlanet = new Rectangle((m_graphics.PreferredBackBufferWidth / 2) - (planetSize / 2), (m_graphics.PreferredBackBufferHeight / 2) - planetSize - 20, planetSize, planetSize);
+
+            m_spriteBatch.Draw(
+                    m_texPlanet,
+                    m_rectPlanet,
+                    Color.White
+                );
         }
     }
 }

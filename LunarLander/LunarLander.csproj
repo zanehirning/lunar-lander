@@ -12,8 +12,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Content\Sprites\**" />
+    <Compile Remove="Views\NewFolder1\**" />
+    <Compile Remove="Views\NewFolder\**" />
     <EmbeddedResource Remove="Content\Sprites\**" />
+    <EmbeddedResource Remove="Views\NewFolder1\**" />
+    <EmbeddedResource Remove="Views\NewFolder\**" />
     <None Remove="Content\Sprites\**" />
+    <None Remove="Views\NewFolder1\**" />
+    <None Remove="Views\NewFolder\**" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Icon.ico" />

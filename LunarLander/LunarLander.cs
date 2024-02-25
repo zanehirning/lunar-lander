@@ -29,7 +29,10 @@ namespace LunarLander
 
             m_states = new Dictionary<GameStateEnum, IGameState>
             {
-                { GameStateEnum.MainMenu, new Views.MainMenu.MainMenuView() }
+                { GameStateEnum.MainMenu, new Views.MainMenu.MainMenuView() },
+                { GameStateEnum.Credits, new Views.Credits.CreditsView() },
+                { GameStateEnum.HighScores, new Views.HighScores.HighScoresView() },
+                { GameStateEnum.Game, new Views.Game.GameView() },
             };
 
             foreach (IGameState gameState in m_states.Values)
