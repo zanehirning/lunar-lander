@@ -10,14 +10,14 @@
 *.nuspec
 
 # Ignore build output
-/bin/
-/obj/
+*/bin/
+*/obj/
 
 # Ignore NuGet packages
-/packages/
+*/packages/
 
 # Ignore MonoGame content build output
-/bin/*.xnb
+*/bin/*.xnb
 
 # Ignore macOS specific files
 .DS_Store
