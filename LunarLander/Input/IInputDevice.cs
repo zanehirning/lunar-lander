@@ -10,7 +10,6 @@ namespace LunarLander.Input
     public interface IInputDevice
     {
         public delegate void CommandDelegate();
-        public delegate GameStateEnum StateDelegate();
         public delegate void CommandDelegatePosition();
 
         void Update();

@@ -20,7 +20,6 @@ namespace LunarLander.Views.MainMenu
         private Texture2D m_texPlanet;
         private Rectangle m_rectPlanet;
         private MenuStateEnum m_currentSelection = MenuStateEnum.StartGame;
-        private bool m_waitForKeyRelease = false;
         private KeyboardInput m_inputKeyboard;
 
         public override void loadContent(ContentManager contentManager)
@@ -32,40 +31,23 @@ namespace LunarLander.Views.MainMenu
             m_inputKeyboard = new KeyboardInput();
             m_inputKeyboard.registerCommand(Keys.Down, true, new IInputDevice.CommandDelegate(menuDown));
             m_inputKeyboard.registerCommand(Keys.Up, true, new IInputDevice.CommandDelegate(menuUp));
-            m_inputKeyboard.registerCommand(Keys.Enter, true, new IInputDevice.CommandDelegate(selectOption));
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
         {
             // This is the technique I'm using to ensure one keypress makes one menu navigation move
-            if (!m_waitForKeyRelease)
+            m_inputKeyboard.Update();
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
             {
-                // Arrow keys to navigate the menu
-                m_inputKeyboard.Update();
-
-                // If enter is pressed, return the appropriate new state
-                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuStateEnum.StartGame)
+                switch (m_currentSelection)
                 {
-                    return GameStateEnum.Game;
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuStateEnum.HighScores)
-                {
-                    return GameStateEnum.HighScores;
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuStateEnum.Credits)
-                {
-                    return GameStateEnum.Credits;
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuStateEnum.Exit)
-                {
-                    return GameStateEnum.Exit;
+                    case MenuStateEnum.StartGame: return GameStateEnum.Game;
+                    case MenuStateEnum.Credits: return GameStateEnum.Credits;
+                    case MenuStateEnum.HighScores: return GameStateEnum.HighScores;
+                    case MenuStateEnum.Exit: return GameStateEnum.Game;
+                    default: return GameStateEnum.MainMenu;
                 }
             }
-            else if (Keyboard.GetState().IsKeyUp(Keys.Down) && Keyboard.GetState().IsKeyUp(Keys.Up))
-            {
-                m_waitForKeyRelease = false;
-            }
-
             return GameStateEnum.MainMenu;
         }
 
@@ -79,7 +61,6 @@ namespace LunarLander.Views.MainMenu
             if (m_currentSelection != MenuStateEnum.Exit)
             {
                 m_currentSelection = m_currentSelection + 1;
-                m_waitForKeyRelease = true;
             }
         }
         private void menuUp()
@@ -87,7 +68,6 @@ namespace LunarLander.Views.MainMenu
             if (m_currentSelection != MenuStateEnum.StartGame)
             {
                 m_currentSelection = m_currentSelection - 1;
-                m_waitForKeyRelease = true;
             }
         }
 

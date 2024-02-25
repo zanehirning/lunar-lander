@@ -10,17 +10,17 @@ namespace LunarLander.Input
     public class KeyboardInput : IInputDevice
     {
 
-        private Dictionary<Keys, CommandEntry> m_commandEntries = new Dictionary<Keys, CommandEntry>();
+        private Dictionary<Keys, CommandEntry<IInputDevice.CommandDelegate>> m_commandEntries = new Dictionary<Keys, CommandEntry<IInputDevice.CommandDelegate>>();
         private KeyboardState m_statePrevious;
-
         public void registerCommand(Keys key, bool keyPressOnly, IInputDevice.CommandDelegate callback)
         {
             if (m_commandEntries.ContainsKey(key))
             {
                 m_commandEntries.Remove(key);
             }
-            m_commandEntries.Add(key, new CommandEntry(key, keyPressOnly, callback));
+            m_commandEntries.Add(key, new CommandEntry<IInputDevice.CommandDelegate>(key, keyPressOnly, callback));
         }
+
         public void unregisterCommand(Keys key)
         {
             if (m_commandEntries.ContainsKey(key))
@@ -29,9 +29,9 @@ namespace LunarLander.Input
             }    
         }
 
-        private struct CommandEntry
+        private struct CommandEntry<T> where T : Delegate
         {
-            public CommandEntry(Keys key, bool keyPressOnly, IInputDevice.CommandDelegate callback)
+            public CommandEntry(Keys key, bool keyPressOnly, T callback)
             {
                 this.key = key;
                 this.keyPressOnly = keyPressOnly;
@@ -39,13 +39,13 @@ namespace LunarLander.Input
             }
             public Keys key;
             public bool keyPressOnly;
-            public IInputDevice.CommandDelegate callback;
+            public T callback;
         }
 
         public void Update()
         {
             KeyboardState state = Keyboard.GetState();
-            foreach (CommandEntry entry in this.m_commandEntries.Values)
+            foreach (CommandEntry<IInputDevice.CommandDelegate> entry in this.m_commandEntries.Values)
             {
                 if (entry.keyPressOnly && keyPressed(entry.key))
                 {
