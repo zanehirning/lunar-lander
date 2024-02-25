@@ -13,11 +13,30 @@ namespace LunarLander.State
     {
         protected GraphicsDeviceManager m_graphics;
         protected SpriteBatch m_spriteBatch;
+        protected BasicEffect m_effect;
 
         public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics)
         {
             m_graphics = graphics;
             m_spriteBatch = new SpriteBatch(graphicsDevice);
+            m_graphics.GraphicsDevice.RasterizerState = new RasterizerState
+            {
+                FillMode = FillMode.Solid,
+                CullMode = CullMode.CullCounterClockwiseFace,   // CullMode.None If you want to not worry about triangle winding order
+                MultiSampleAntiAlias = true,
+            };
+
+            m_effect = new BasicEffect(m_graphics.GraphicsDevice)
+            {
+                VertexColorEnabled = true,
+                View = Matrix.CreateLookAt(new Vector3(0, 0, 1), Vector3.Zero, Vector3.Up),
+
+                Projection = Matrix.CreateOrthographicOffCenter(
+                    0, m_graphics.GraphicsDevice.Viewport.Width,
+                    m_graphics.GraphicsDevice.Viewport.Height, 0,   // doing this to get it to match the default of upper left of (0, 0)
+                    0.1f, 2)
+            };
+
         }
         public abstract void loadContent(ContentManager contentManager);
         public abstract GameStateEnum processInput(GameTime gameTime);
