@@ -21,7 +21,6 @@ namespace LunarLander.Input
             }
             m_commandEntries.Add(key, new CommandEntry(key, keyPressOnly, callback));
         }
-
         public void unregisterCommand(Keys key)
         {
             if (m_commandEntries.ContainsKey(key))

@@ -32,6 +32,7 @@ namespace LunarLander.Views.MainMenu
             m_inputKeyboard = new KeyboardInput();
             m_inputKeyboard.registerCommand(Keys.Down, true, new IInputDevice.CommandDelegate(menuDown));
             m_inputKeyboard.registerCommand(Keys.Up, true, new IInputDevice.CommandDelegate(menuUp));
+            m_inputKeyboard.registerCommand(Keys.Enter, true, new IInputDevice.CommandDelegate(selectOption));
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
@@ -87,6 +88,18 @@ namespace LunarLander.Views.MainMenu
             {
                 m_currentSelection = m_currentSelection - 1;
                 m_waitForKeyRelease = true;
+            }
+        }
+
+        private GameStateEnum selectOption()
+        {
+            switch (m_currentSelection)
+            {
+                case MenuStateEnum.StartGame: return GameStateEnum.Game;
+                case MenuStateEnum.Credits: return GameStateEnum.Credits;
+                case MenuStateEnum.HighScores: return GameStateEnum.HighScores;
+                case MenuStateEnum.Exit: return GameStateEnum.Game;
+                default: return GameStateEnum.MainMenu;
             }
         }
         #endregion
