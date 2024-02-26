@@ -16,6 +16,8 @@ namespace LunarLander.Views.Game
     {
         TerrainGenerator terrain = new TerrainGenerator(1);
         List<TerrainGenerator.Point> points;
+        private VertexPositionColor[] m_vertsLineStrip;
+        private int[] m_indexLineStrip;
         private VertexPositionColor[] m_vertsTriStrip;
         private int[] m_indexTriStrip;
 
@@ -26,21 +28,47 @@ namespace LunarLander.Views.Game
         }
         public override void loadContent(ContentManager contentManager)
         {
-            m_vertsTriStrip = new VertexPositionColor[points.Count + 2]; //Add two points at the bottom of screen to complete the piece
-            m_indexTriStrip = new int[points.Count + 2];
+            // Triangle Stuff
+            m_vertsTriStrip = new VertexPositionColor[2 * points.Count];
+            m_indexTriStrip = new int[2 * points.Count];
 
-            m_vertsTriStrip[0].Position = new Vector3(0, m_graphics.PreferredBackBufferHeight - 50, 0);
-            m_vertsTriStrip[0].Color = Color.White;
-            m_vertsTriStrip[points.Count + 1].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight - 50, 0);
-            m_vertsTriStrip[points.Count + 1].Color = Color.White;
-            m_indexTriStrip[0] = 0;
-            m_indexTriStrip[points.Count + 1] = points.Count + 1;
+            //m_vertsTriStrip[0].Position = new Vector3(0, m_graphics.PreferredBackBufferHeight, 0); //bottom left
+            //m_vertsTriStrip[0].Color = Color.White;
+            for (int i = 0; i < points.Count ; i+=3)
+            {
+                m_vertsTriStrip[i].Position = new Vector3(Convert.ToSingle(points[i].x), Convert.ToSingle(m_graphics.PreferredBackBufferHeight), 0); // point under triangle
+                m_vertsTriStrip[i].Color = Color.White;
+                m_indexTriStrip[i] = i;
+
+                // Actual Point
+                m_vertsTriStrip[i + 1].Position = new Vector3(Convert.ToSingle(points[i + 1].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(points[i + 1].y), 0);
+                m_vertsTriStrip[i + 1].Color = Color.White;
+                m_indexTriStrip[i + 1] = i + 1;
+
+                //Connector point
+                m_vertsTriStrip[i + 2].Position = new Vector3(Convert.ToSingle(points[i + 2].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(points[i + 2].y), 0);
+                m_vertsTriStrip[i + 2].Color = Color.White;
+                m_indexTriStrip[i + 2] = i + 2;
+            }
+
+
+
+            //Line stuff
+            m_vertsLineStrip = new VertexPositionColor[points.Count + 2]; //Add two points at the bottom of screen to complete the piece
+            m_indexLineStrip = new int[points.Count + 2];
+
+            m_vertsLineStrip[0].Position = new Vector3(0, m_graphics.PreferredBackBufferHeight - 50, 0);
+            m_vertsLineStrip[0].Color = Color.White;
+            m_vertsLineStrip[points.Count + 1].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight - 50, 0);
+            m_vertsLineStrip[points.Count + 1].Color = Color.White;
+            m_indexLineStrip[0] = 0;
+            m_indexLineStrip[points.Count + 1] = points.Count + 1;
             for (int i = 0; i < points.Count; i++)
             {
                 TerrainGenerator.Point point = points[i];
-                m_vertsTriStrip[i + 1].Position = new Vector3(Convert.ToSingle(point.x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(point.y), point.z);
-                m_vertsTriStrip[i + 1].Color = Color.White;
-                m_indexTriStrip[i + 1] = i + 1;
+                m_vertsLineStrip[i + 1].Position = new Vector3(Convert.ToSingle(point.x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(point.y), point.z);
+                m_vertsLineStrip[i + 1].Color = Color.White;
+                m_indexLineStrip[i + 1] = i + 1;
             }
         }
 
@@ -57,9 +85,15 @@ namespace LunarLander.Views.Game
             {
                 pass.Apply();
                 m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
+                    PrimitiveType.TriangleStrip,
+                    m_vertsTriStrip, 0, m_vertsTriStrip.Length - 1,
+                    m_indexTriStrip, 0, m_indexTriStrip.Length / 2
+
+                );
+                m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
                     PrimitiveType.LineStrip,
-                    m_vertsTriStrip, 0, m_vertsTriStrip.Length-1,
-                    m_indexTriStrip, 0, m_indexTriStrip.Length - 1
+                    m_vertsLineStrip, 0, m_vertsLineStrip.Length-1,
+                    m_indexLineStrip, 0, m_indexLineStrip.Length - 1
                 );
             }
             m_spriteBatch.End();
