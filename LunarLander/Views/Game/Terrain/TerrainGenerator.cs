@@ -38,7 +38,7 @@ namespace LunarLander.Views.Game.Terrain
             r = r > BUFFER_HEIGHT / 5 ? BUFFER_HEIGHT / 5 : r; //put a max displacement
             r = r < -BUFFER_HEIGHT / 5 ? -BUFFER_HEIGHT / 45 : r;
             double pointHeight = midPointY + r;
-            pointHeight = pointHeight < 50 ? 50 : pointHeight;
+            pointHeight = pointHeight < 40 ? 40 : pointHeight;
             Point newPoint = new Point(midPointX, pointHeight);
             this.terrainPoints.Add(newPoint);
 

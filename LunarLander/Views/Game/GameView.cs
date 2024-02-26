@@ -29,8 +29,8 @@ namespace LunarLander.Views.Game
         public override void loadContent(ContentManager contentManager)
         {
             // Triangle Stuff
-            m_vertsTriStrip = new VertexPositionColor[2 * points.Count + 1];
-            m_indexTriStrip = new int[2 * points.Count + 1];
+            m_vertsTriStrip = new VertexPositionColor[2 * points.Count + 2];
+            m_indexTriStrip = new int[2 * points.Count + 2];
 
             //m_vertsTriStrip[0].Position = new Vector3(0, m_graphics.PreferredBackBufferHeight, 0); //bottom left
             //m_vertsTriStrip[0].Color = Color.White;
@@ -51,10 +51,13 @@ namespace LunarLander.Views.Game
                 m_indexTriStrip[i + 2] = i + 2;
             }
 
-            m_vertsTriStrip[m_vertsTriStrip.Length - 1].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight, 0);
+            m_vertsTriStrip[m_vertsTriStrip.Length - 2].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight, 0);
+            m_vertsTriStrip[m_vertsTriStrip.Length - 2].Color = Color.Gray;
+            m_indexTriStrip[m_indexTriStrip.Length - 2] = m_indexTriStrip.Length - 2;
+
+            m_vertsTriStrip[m_vertsTriStrip.Length - 1].Position = new Vector3(m_graphics.PreferredBackBufferWidth - 5, m_graphics.PreferredBackBufferHeight, 0);
             m_vertsTriStrip[m_vertsTriStrip.Length - 1].Color = Color.Gray;
             m_indexTriStrip[m_indexTriStrip.Length - 1] = m_indexTriStrip.Length - 1;
-
 
 
             //Line stuff
@@ -91,7 +94,7 @@ namespace LunarLander.Views.Game
                 m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
                     PrimitiveType.TriangleStrip,
                     m_vertsTriStrip, 0, m_vertsTriStrip.Length - 1,
-                    m_indexTriStrip, 0, m_indexTriStrip.Length / 2
+                    m_indexTriStrip, 0, (m_indexTriStrip.Length / 2) - 1
 
                 );
                 m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
