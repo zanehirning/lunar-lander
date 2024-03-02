@@ -8,9 +8,11 @@
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Fonts/anta-regular.spritefont</File>
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Images/Brahe_Sprite.png</File>
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Images/Moon2_Sprite.png</File>
+    <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Images/ship.png</File>
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Images/Uranus_Sprite.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

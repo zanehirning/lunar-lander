@@ -67,7 +67,7 @@ namespace LunarLander
                 m_currentState.update(gameTime);
                 m_currentState = m_states[nextStateEnum];
             }
-
+            
             base.Update(gameTime);
         }
 

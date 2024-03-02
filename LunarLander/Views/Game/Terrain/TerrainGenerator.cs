@@ -7,12 +7,15 @@ namespace LunarLander.Views.Game.Terrain
     public class TerrainGenerator
     {
         private List<Point> terrainPoints = new List<Point>();
-        //Hard coded until I decide how I want to handle it
-        private int BUFFER_WIDTH = 1920;
-        private int BUFFER_HEIGHT = 1080;
-        private int LANDING_POINT_WIDTH = 1920 / 15; // arbitrary, will be tuned
-        public TerrainGenerator(int level) 
+        private List<LandingStrip> landingStrips = new List<LandingStrip>();
+        private int bufferWidth;
+        private int bufferHeight;
+        private int landingPointWidth; 
+        public TerrainGenerator(int level, int screenWidth, int screenHeight) 
         {
+            bufferWidth = screenWidth;
+            bufferHeight = screenHeight;
+            landingPointWidth = bufferWidth / 15;
             Random rand = new Random();
             createEndpoints(rand);
             createLandingPoints(level, rand);
@@ -35,8 +38,8 @@ namespace LunarLander.Views.Game.Terrain
             double midPointX = (left.x + right.x) / 2;
             double midPointY = (left.y + right.y) / 2;
             double r = s * (gaussianRnd(rand) * Math.Abs(left.x - right.x));
-            r = r > BUFFER_HEIGHT / 5 ? BUFFER_HEIGHT / 5 : r; //put a max displacement
-            r = r < -BUFFER_HEIGHT / 5 ? -BUFFER_HEIGHT / 45 : r;
+            r = r > bufferHeight / 5 ? bufferHeight / 5 : r; //put a max displacement
+            r = r < -bufferHeight / 5 ? -bufferHeight / 45 : r;
             double pointHeight = midPointY + r;
             pointHeight = pointHeight < 40 ? 40 : pointHeight;
             Point newPoint = new Point(midPointX, pointHeight);
@@ -48,50 +51,53 @@ namespace LunarLander.Views.Game.Terrain
 
         public void createEndpoints(Random rand)
         {
-            int leftEndY = rand.Next(BUFFER_HEIGHT / 4) + 20;
+            int leftEndY = rand.Next(bufferHeight / 4) + 20;
             Point leftEndPoint = new Point(0, leftEndY);
-            int rightEndY = rand.Next(BUFFER_HEIGHT / 4) + 20;
-            Point rightEndPoint = new Point(BUFFER_WIDTH, rightEndY);
+            int rightEndY = rand.Next(bufferHeight / 4) + 20;
+            Point rightEndPoint = new Point(bufferWidth, rightEndY);
             terrainPoints.Add(leftEndPoint);
             terrainPoints.Add(rightEndPoint);
         }
 
         public void createLandingPoints(int level, Random rand)
         {
-            int buffer = Convert.ToInt32(BUFFER_WIDTH * .15);
+            int buffer = Convert.ToInt32(bufferWidth * .15);
             // create two, make sure they are some distance apart, but not too far
             if (level == 1)
             {
                 // Place anywhere in the first half
-                int firstLeftX = rand.Next(BUFFER_WIDTH / 2 - buffer - LANDING_POINT_WIDTH) + buffer;
-                int firstRightX = firstLeftX + LANDING_POINT_WIDTH;
-                int firstY = rand.Next(BUFFER_HEIGHT / 4) + 20;
+                int firstLeftX = rand.Next(bufferWidth / 2 - buffer - landingPointWidth) + buffer;
+                int firstRightX = firstLeftX + landingPointWidth;
+                int firstY = rand.Next(bufferHeight / 4) + 20;
                 firstY = firstY < 40 ? 40 : firstY;
                 Point firstLeftPoint = new Point(firstLeftX, firstY);
                 Point firstRightPoint = new Point(firstRightX, firstY);
                 terrainPoints.Add(firstLeftPoint);
                 terrainPoints.Add(firstRightPoint);
+                landingStrips.Add(new LandingStrip(firstLeftPoint, firstRightPoint));
 
                 // Second landing strip. Place anywhere in the second half, plus small buffer
-                int secondLeftX = rand.Next((BUFFER_WIDTH / 2) - (2 * buffer) - LANDING_POINT_WIDTH) + buffer + (BUFFER_WIDTH / 2);
-                int secondRightX = secondLeftX+ LANDING_POINT_WIDTH;
-                int secondY = rand.Next(BUFFER_HEIGHT / 4) + 20;
+                int secondLeftX = rand.Next((bufferWidth / 2) - (2 * buffer) - landingPointWidth) + buffer + (bufferWidth / 2);
+                int secondRightX = secondLeftX+ landingPointWidth;
+                int secondY = rand.Next(bufferHeight / 4) + 20;
                 secondY = secondY < 40 ? 40 : secondY;
                 Point secondLeftPoint = new Point(secondLeftX, secondY);
                 Point secondRightPoint = new Point(secondRightX, secondY);
                 terrainPoints.Add(secondLeftPoint);
                 terrainPoints.Add(secondRightPoint);
+                landingStrips.Add(new LandingStrip(secondLeftPoint, secondRightPoint));
             }
             else
             {
-                int leftX = rand.Next(BUFFER_WIDTH - (2 * buffer) - LANDING_POINT_WIDTH) + buffer;
-                int rightX = leftX + LANDING_POINT_WIDTH;
-                int landingY = rand.Next(BUFFER_HEIGHT / 4) + 20;
+                int leftX = rand.Next(bufferWidth - (2 * buffer) - landingPointWidth) + buffer;
+                int rightX = leftX + landingPointWidth;
+                int landingY = rand.Next(bufferHeight / 4) + 20;
                 landingY = landingY < 40 ? 40 : landingY;
                 Point leftPoint = new Point(leftX, landingY);
                 Point rightPoint = new Point(rightX, landingY);
                 terrainPoints.Add(leftPoint);
                 terrainPoints.Add(rightPoint);
+                landingStrips.Add(new LandingStrip(leftPoint, rightPoint));
             }
         }
 
@@ -106,6 +112,17 @@ namespace LunarLander.Views.Game.Terrain
         public List<Point> getPoints()
         {
             return this.terrainPoints;
+        }
+
+        public struct LandingStrip
+        {
+            public Point leftPoint { get; set; }
+            public Point rightPoint { get; set; }
+            public LandingStrip(Point left, Point right)
+            {
+                this.leftPoint = left;
+                this.rightPoint = right;
+            }
         }
 
         public struct Point
