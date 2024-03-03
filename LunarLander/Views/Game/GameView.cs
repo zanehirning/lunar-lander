@@ -31,6 +31,8 @@ namespace LunarLander.Views.Game
 
         private Texture2D m_texShip;
         private Rectangle m_rectShip;
+        private Texture2D m_texBackground;
+        private Rectangle m_rectBackground;
 
         public GameView()
         {
@@ -39,7 +41,8 @@ namespace LunarLander.Views.Game
         {
             m_texShip = contentManager.Load<Texture2D>("Images/ship");
             m_rectShip = new Rectangle(50, 50, 60, 60);
-
+            m_texBackground = contentManager.Load<Texture2D>("Images/space-background");
+            m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
 
             m_ship = new PlayerShip(new Vector2(80, 80));
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
@@ -63,32 +66,8 @@ namespace LunarLander.Views.Game
         public override void render(GameTime gameTime)
         {
             m_spriteBatch.Begin();
-            m_spriteBatch.Draw(
-                m_texShip,
-                new Rectangle(Convert.ToInt32(m_ship.position.X), Convert.ToInt32(m_ship.position.Y), m_rectShip.Width, m_rectShip.Height),
-                null,
-                Color.White,
-                Convert.ToSingle((m_ship.rotation / 180) * Math.PI),
-                new Vector2(m_texShip.Width / 2, m_texShip.Height / 2),
-                SpriteEffects.None,
-                0
-            );
-            
-            foreach(EffectPass pass in m_effect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-                m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
-                    PrimitiveType.TriangleStrip,
-                    m_vertsTriStrip, 0, m_points.Count + 1,
-                    m_indexTriStrip, 0, m_points.Count + 1
-                );
-
-                m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
-                    PrimitiveType.LineStrip,
-                    m_vertsLineStrip, 0, m_vertsLineStrip.Length - 1,
-                    m_indexLineStrip, 0, m_indexLineStrip.Length - 1
-                );
-            }
+            drawShip();
+            drawTerrain();
             drawShipStatus();
             m_spriteBatch.End();
         }
@@ -114,26 +93,26 @@ namespace LunarLander.Views.Game
             
             for (int i = 0; i < m_points.Count - 1; i+=2)
             {
-                m_vertsTriStrip[i].Position = new Vector3(Convert.ToSingle(m_points[i].x), Convert.ToSingle(m_graphics.PreferredBackBufferHeight), 0); // point under triangle
+                m_vertsTriStrip[i].Position = new Vector3(Convert.ToSingle(m_points[i].x), Convert.ToSingle(m_graphics.PreferredBackBufferHeight), -1); // point under triangle
                 m_vertsTriStrip[i].Color = new Color(46, 47, 52);
                 m_indexTriStrip[i] = i;
 
                 // Actual Point
-                m_vertsTriStrip[i + 1].Position = new Vector3(Convert.ToSingle(m_points[i].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(m_points[i].y), 0);
+                m_vertsTriStrip[i + 1].Position = new Vector3(Convert.ToSingle(m_points[i].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(m_points[i].y), -1);
                 m_vertsTriStrip[i + 1].Color = new Color(46, 47, 52);
                 m_indexTriStrip[i + 1] = i + 1;
 
                 //Connector point
-                m_vertsTriStrip[i + 2].Position = new Vector3(Convert.ToSingle(m_points[i + 1].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(m_points[i + 1].y), 0);
+                m_vertsTriStrip[i + 2].Position = new Vector3(Convert.ToSingle(m_points[i + 1].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(m_points[i + 1].y),-1);
                 m_vertsTriStrip[i + 2].Color = new Color(46, 47, 52);
                 m_indexTriStrip[i + 2] = i + 2;
             }
 
-            m_vertsTriStrip[m_points.Count].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight, 0);
+            m_vertsTriStrip[m_points.Count].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight,-1);
             m_vertsTriStrip[m_points.Count].Color = new Color(46, 47, 52);
             m_indexTriStrip[m_points.Count] = m_points.Count;
 
-            m_vertsTriStrip[m_points.Count + 1].Position = new Vector3(m_graphics.PreferredBackBufferWidth - 5, m_graphics.PreferredBackBufferHeight, 0);
+            m_vertsTriStrip[m_points.Count + 1].Position = new Vector3(m_graphics.PreferredBackBufferWidth - 5, m_graphics.PreferredBackBufferHeight, -1);
             m_vertsTriStrip[m_points.Count + 1].Color = new Color(46, 47, 52);
             m_indexTriStrip[m_points.Count + 1] = m_points.Count + 1;
 
@@ -141,9 +120,9 @@ namespace LunarLander.Views.Game
             m_vertsLineStrip = new VertexPositionColor[m_points.Count + 2]; //Add two m_points at the bottom of screen to complete the piece
             m_indexLineStrip = new int[m_points.Count + 2];
 
-            m_vertsLineStrip[0].Position = new Vector3(0, m_graphics.PreferredBackBufferHeight - 50, 0);
+            m_vertsLineStrip[0].Position = new Vector3(0, m_graphics.PreferredBackBufferHeight - 50, -1);
             m_vertsLineStrip[0].Color = new Color(113, 116, 128);
-            m_vertsLineStrip[m_points.Count + 1].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight - 50, 0);
+            m_vertsLineStrip[m_points.Count + 1].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight - 50, -1);
             m_vertsLineStrip[m_points.Count + 1].Color = new Color(113, 116, 128);
             m_indexLineStrip[0] = 0;
             m_indexLineStrip[m_points.Count + 1] = m_points.Count + 1;
@@ -155,8 +134,39 @@ namespace LunarLander.Views.Game
                 m_indexLineStrip[i + 1] = i + 1;
             }
         }
-    
 
+        #region Drawing
+        public void drawTerrain()
+        {
+            foreach (EffectPass pass in m_effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
+                    PrimitiveType.TriangleStrip,
+                    m_vertsTriStrip, 0, m_points.Count + 1,
+                    m_indexTriStrip, 0, m_points.Count + 1
+                );
+
+                m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
+                    PrimitiveType.LineStrip,
+                    m_vertsLineStrip, 0, m_vertsLineStrip.Length - 1,
+                    m_indexLineStrip, 0, m_indexLineStrip.Length - 1
+                );
+            }
+        }
+        public void drawShip()
+        {
+            m_spriteBatch.Draw(
+                m_texShip,
+                new Rectangle(Convert.ToInt32(m_ship.position.X), Convert.ToInt32(m_ship.position.Y), m_rectShip.Width, m_rectShip.Height),
+                null,
+                Color.White,
+                Convert.ToSingle((m_ship.rotation / 180) * Math.PI),
+                new Vector2(m_texShip.Width / 2, m_texShip.Height / 2),
+                SpriteEffects.None,
+                0
+            );
+        }
         public void drawShipStatus()
         {
             float bottom = drawStatus(
@@ -206,5 +216,6 @@ namespace LunarLander.Views.Game
 
             spriteBatch.DrawString(font, text, position, frontColor, 0, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
+        #endregion
     }
 }

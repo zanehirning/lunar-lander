@@ -13,8 +13,8 @@ namespace LunarLander.Views.Game.Ship
         public Vector2 position;
         public Vector2 velocity;
         public double rotation { get; set; } = 90;
-        public float thrust = .02f;
-        public float GRAVITY = .005f;
+        public float thrust = .01f;
+        public Vector2 GRAVITY = new Vector2(0, .005f);
         public double fuel = 20;
         private bool isThrusting = false;
 
@@ -55,7 +55,7 @@ namespace LunarLander.Views.Game.Ship
                 fuel = fuel > 0 ? fuel - gameTime.ElapsedGameTime.TotalMilliseconds / 1000 : 0;
             }
             isThrusting = false;
-            velocity.Y += GRAVITY;
+            velocity = Vector2.Add(GRAVITY, velocity);
             position = Vector2.Add(velocity, position);
         }
 

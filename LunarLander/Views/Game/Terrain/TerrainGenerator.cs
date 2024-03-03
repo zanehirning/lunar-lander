@@ -135,7 +135,7 @@ namespace LunarLander.Views.Game.Terrain
             {
                 this.x = x;
                 this.y = y;
-                this.z = 0;
+                this.z = -1;
             }
         }
     }
