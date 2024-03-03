@@ -98,7 +98,7 @@ namespace LunarLander.Views.Game
             m_inputKeyboard.Update();
             m_ship.update(gameTime);
             m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
-            m_speedString = $"Speed: {Math.Abs(m_ship.velocity.Y).ToString("F2")} m/s";
+            m_speedString = $"Speed: {m_ship.velocity.Length().ToString("F2")} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
         }
 
