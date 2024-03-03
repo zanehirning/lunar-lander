@@ -115,26 +115,26 @@ namespace LunarLander.Views.Game
             for (int i = 0; i < m_points.Count - 1; i+=2)
             {
                 m_vertsTriStrip[i].Position = new Vector3(Convert.ToSingle(m_points[i].x), Convert.ToSingle(m_graphics.PreferredBackBufferHeight), 0); // point under triangle
-                m_vertsTriStrip[i].Color = Color.Gray;
+                m_vertsTriStrip[i].Color = new Color(46, 47, 52);
                 m_indexTriStrip[i] = i;
 
                 // Actual Point
                 m_vertsTriStrip[i + 1].Position = new Vector3(Convert.ToSingle(m_points[i].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(m_points[i].y), 0);
-                m_vertsTriStrip[i + 1].Color = Color.Gray;
+                m_vertsTriStrip[i + 1].Color = new Color(46, 47, 52);
                 m_indexTriStrip[i + 1] = i + 1;
 
                 //Connector point
                 m_vertsTriStrip[i + 2].Position = new Vector3(Convert.ToSingle(m_points[i + 1].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(m_points[i + 1].y), 0);
-                m_vertsTriStrip[i + 2].Color = Color.Gray;
+                m_vertsTriStrip[i + 2].Color = new Color(46, 47, 52);
                 m_indexTriStrip[i + 2] = i + 2;
             }
 
             m_vertsTriStrip[m_points.Count].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight, 0);
-            m_vertsTriStrip[m_points.Count].Color = Color.Gray;
+            m_vertsTriStrip[m_points.Count].Color = new Color(46, 47, 52);
             m_indexTriStrip[m_points.Count] = m_points.Count;
 
             m_vertsTriStrip[m_points.Count + 1].Position = new Vector3(m_graphics.PreferredBackBufferWidth - 5, m_graphics.PreferredBackBufferHeight, 0);
-            m_vertsTriStrip[m_points.Count + 1].Color = Color.Gray;
+            m_vertsTriStrip[m_points.Count + 1].Color = new Color(46, 47, 52);
             m_indexTriStrip[m_points.Count + 1] = m_points.Count + 1;
 
             //Line stuff
@@ -142,16 +142,16 @@ namespace LunarLander.Views.Game
             m_indexLineStrip = new int[m_points.Count + 2];
 
             m_vertsLineStrip[0].Position = new Vector3(0, m_graphics.PreferredBackBufferHeight - 50, 0);
-            m_vertsLineStrip[0].Color = Color.Red;
+            m_vertsLineStrip[0].Color = new Color(113, 116, 128);
             m_vertsLineStrip[m_points.Count + 1].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight - 50, 0);
-            m_vertsLineStrip[m_points.Count + 1].Color = Color.Red;
+            m_vertsLineStrip[m_points.Count + 1].Color = new Color(113, 116, 128);
             m_indexLineStrip[0] = 0;
             m_indexLineStrip[m_points.Count + 1] = m_points.Count + 1;
             for (int i = 0; i < m_points.Count; i++)
             {
                 TerrainGenerator.Point point = m_points[i];
                 m_vertsLineStrip[i + 1].Position = new Vector3(Convert.ToSingle(point.x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(point.y), point.z);
-                m_vertsLineStrip[i + 1].Color = Color.Red;
+                m_vertsLineStrip[i + 1].Color = new Color(113, 116, 128);
                 m_indexLineStrip[i + 1] = i + 1;
             }
         }
