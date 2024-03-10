@@ -31,7 +31,8 @@ namespace LunarLander
             {
                 { GameStateEnum.MainMenu, new Views.MainMenu.MainMenuView() },
                 { GameStateEnum.Credits, new Views.Credits.CreditsView() },
-                { GameStateEnum.HighScores, new Views.HighScores.HighScoresView() },
+                { GameStateEnum.HighScores, new Views.HighScores.HighScoresView()  },
+                { GameStateEnum.Settings,  new Views.Settings.SettingsView() },
                 { GameStateEnum.Game, new Views.Game.GameView() },
             };
 

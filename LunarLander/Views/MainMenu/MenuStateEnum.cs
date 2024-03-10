@@ -12,6 +12,7 @@ namespace LunarLander.Views.MainMenu
         StartGame,
         HighScores,
         Credits,
+        Settings,
         Exit
     }
 }

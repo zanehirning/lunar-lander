@@ -43,6 +43,7 @@ namespace LunarLander.Views.MainMenu
                     case MenuStateEnum.StartGame: return GameStateEnum.Game;
                     case MenuStateEnum.Credits: return GameStateEnum.Credits;
                     case MenuStateEnum.HighScores: return GameStateEnum.HighScores;
+                    case MenuStateEnum.Settings: return GameStateEnum.Settings;
                     case MenuStateEnum.Exit: return GameStateEnum.Exit;
                     default: return GameStateEnum.MainMenu;
                 }
@@ -77,7 +78,8 @@ namespace LunarLander.Views.MainMenu
                 case MenuStateEnum.StartGame: return GameStateEnum.Game;
                 case MenuStateEnum.Credits: return GameStateEnum.Credits;
                 case MenuStateEnum.HighScores: return GameStateEnum.HighScores;
-                case MenuStateEnum.Exit: return GameStateEnum.Game;
+                case MenuStateEnum.Settings: return GameStateEnum.Settings;
+                case MenuStateEnum.Exit: return GameStateEnum.Exit;
                 default: return GameStateEnum.MainMenu;
             }
         }
@@ -91,6 +93,7 @@ namespace LunarLander.Views.MainMenu
             float bottom = drawMenuItem(m_currentSelection == MenuStateEnum.StartGame ? m_menuSelectFont : m_menuFont, "Start Game", m_graphics.PreferredBackBufferHeight / 2, m_currentSelection == MenuStateEnum.StartGame ? new Color(1, 59, 89) : Color.White);
             bottom = drawMenuItem(m_currentSelection == MenuStateEnum.HighScores ? m_menuSelectFont : m_menuFont, "High Scores", bottom, m_currentSelection == MenuStateEnum.HighScores ? new Color(1, 59, 89) : Color.White);
             bottom = drawMenuItem(m_currentSelection == MenuStateEnum.Credits ? m_menuSelectFont : m_menuFont, "Credits", bottom, m_currentSelection == MenuStateEnum.Credits ? new Color(1, 59, 89) : Color.White);
+            bottom = drawMenuItem(m_currentSelection == MenuStateEnum.Settings ? m_menuSelectFont : m_menuFont, "Settings", bottom, m_currentSelection == MenuStateEnum.Settings ? new Color(1, 59, 89) : Color.White);
             drawMenuItem(m_currentSelection == MenuStateEnum.Exit ? m_menuSelectFont : m_menuFont, "Exit", bottom, m_currentSelection == MenuStateEnum.Exit ? new Color(1, 59, 89) : Color.White);            
             m_spriteBatch.End();
         }

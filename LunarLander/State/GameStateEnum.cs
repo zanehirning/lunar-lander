@@ -13,6 +13,7 @@ namespace LunarLander.State
         Game,
         HighScores,
         Credits,
+        Settings,
         Exit
     }
 }
