@@ -48,7 +48,7 @@ namespace LunarLander.Views.Game
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
 
             m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
-            m_speedString = $"Speed: {m_ship.velocity} m/s";
+            m_speedString = $"Speed: {m_ship.convertToMeters()} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
 
             setupTerrain();            
@@ -77,7 +77,7 @@ namespace LunarLander.Views.Game
             m_inputKeyboard.Update();
             m_ship.update(gameTime);
             m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
-            m_speedString = $"Speed: {m_ship.velocity.Length().ToString("F2")} m/s";
+            m_speedString = $"Speed: {m_ship.convertToMeters().ToString("F2")} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
         }
 
@@ -179,7 +179,7 @@ namespace LunarLander.Views.Game
                 m_antaFont,
                 m_speedString,
                 bottom,
-                Math.Abs(m_ship.velocity.Y) < 2 ? Color.Green : Color.White
+                Math.Abs(m_ship.convertToMeters()) < 2 ? Color.Green : Color.White
             );
             bottom = drawStatus(
                 m_antaFont,

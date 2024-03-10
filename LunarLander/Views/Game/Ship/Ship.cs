@@ -58,6 +58,11 @@ namespace LunarLander.Views.Game.Ship
             velocity = Vector2.Add(GRAVITY, velocity);
             position = Vector2.Add(velocity, position);
         }
-
+        
+        public double convertToMeters() 
+        {
+            // multiple length of velocity by a factor, may be subject to change
+            return velocity.Length() * 2;
+        }
     }
 }

@@ -101,6 +101,12 @@ namespace LunarLander.Views.Game.Terrain
             }
         }
 
+        public bool isIntersecting() 
+        {
+            
+            return false;
+        }
+
         public double gaussianRnd(Random rand)
         {
             //I've created this before, but I took the solution from https://stackoverflow.com/questions/218060/random-gaussian-variables this time
@@ -114,6 +120,7 @@ namespace LunarLander.Views.Game.Terrain
             return this.terrainPoints;
         }
 
+        #region Structs
         public struct LandingStrip
         {
             public Point leftPoint { get; set; }
@@ -122,6 +129,11 @@ namespace LunarLander.Views.Game.Terrain
             {
                 this.leftPoint = left;
                 this.rightPoint = right;
+            }
+
+            public bool isBetweenPoints(Point point) 
+            {
+                return leftPoint.x <= point.x && rightPoint.x >= point.x;
             }
         }
 
@@ -135,8 +147,21 @@ namespace LunarLander.Views.Game.Terrain
             {
                 this.x = x;
                 this.y = y;
-                this.z = -1;
+                this.z = 0;
             }
         }
+
+        public struct Circle
+        {
+            public Point center;
+            public double radius;
+
+            public Circle(Point center, double radius)
+            {
+                this.center = center;
+                this.radius = radius;
+            }
+        }
+        #endregion
     }
 }
