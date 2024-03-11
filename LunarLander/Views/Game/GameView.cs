@@ -111,6 +111,9 @@ namespace LunarLander.Views.Game
             m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
             m_speedString = $"Speed: {m_ship.convertToMeters().ToString("F2")} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
+            m_particleSystemFire.update(gameTime);
+            m_particleSystemSmoke.update(gameTime);
+
         }
 
         private void setupTerrain()
