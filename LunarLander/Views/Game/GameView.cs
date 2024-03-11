@@ -99,8 +99,6 @@ namespace LunarLander.Views.Game
             drawShip();
             drawTerrain();
             drawShipStatus();
-            Console.WriteLine("Here");
-            Debug.WriteLine("Here");
             m_spriteBatch.End();
             m_renderSmoke.draw(m_spriteBatch, m_particleSystemSmoke);
             m_renderFire.draw(m_spriteBatch, m_particleSystemFire);

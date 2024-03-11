@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using System;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace LunarLander.Views.Game.Particles
 {
@@ -23,12 +24,10 @@ namespace LunarLander.Views.Game.Particles
         public void draw(SpriteBatch spriteBatch, ParticleSystem system)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-
             Rectangle r = new Rectangle(0, 0, 0, 0);
             Vector2 centerTexture = new Vector2(m_texParticle.Width / 2, m_texParticle.Height / 2);
             foreach (Particle particle in system.particles)
             {
-                Console.Write("Here");
                 r.X = (int)particle.center.X;
                 r.Y = (int)particle.center.Y;
                 r.Width = (int)particle.size.X;
