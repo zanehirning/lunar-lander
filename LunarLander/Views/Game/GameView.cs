@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using LunarLander.Views.Game.Particles;
 
 namespace LunarLander.Views.Game
 {
@@ -23,7 +24,7 @@ namespace LunarLander.Views.Game
         private int[] m_indexTriStrip;
         private KeyboardInput m_inputKeyboard;
         private PlayerShip m_ship;
-
+        private bool m_isBackgroundRendered;
         private String m_fuelString;
         private String m_speedString;
         private String m_angleString;
@@ -33,6 +34,11 @@ namespace LunarLander.Views.Game
         private Rectangle m_rectShip;
         private Texture2D m_texBackground;
         private Rectangle m_rectBackground;
+
+        private ParticleSystem m_particleSystemFire;
+        private ParticleSystem m_particleSystemSmoke;
+        private ParticleSystemRenderer m_renderFire;
+        private ParticleSystemRenderer m_renderSmoke;
 
         public GameView()
         {
@@ -47,6 +53,7 @@ namespace LunarLander.Views.Game
             m_ship = new PlayerShip(new Vector2(80, 80));
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
 
+            m_isBackgroundRendered = false;
             m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
             m_speedString = $"Speed: {m_ship.convertToMeters()} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
@@ -66,6 +73,11 @@ namespace LunarLander.Views.Game
         public override void render(GameTime gameTime)
         {
             m_spriteBatch.Begin();
+            if (!m_isBackgroundRendered) 
+            {
+                m_spriteBatch.Draw(m_texBackground, m_rectBackground, Color.White);
+                m_isBackgroundRendered = true;
+            }
             drawShip();
             drawTerrain();
             drawShipStatus();
