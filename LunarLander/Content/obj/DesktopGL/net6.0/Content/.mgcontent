@@ -11,8 +11,12 @@
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Images/ship.png</File>
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Images/space-background.jpg</File>
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Images/Uranus_Sprite.png</File>
+    <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Particles/fire.png</File>
+    <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Particles/smoke.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

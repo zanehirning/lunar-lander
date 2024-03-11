@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -27,6 +28,7 @@ namespace LunarLander.Views.Game.Particles
             Vector2 centerTexture = new Vector2(m_texParticle.Width / 2, m_texParticle.Height / 2);
             foreach (Particle particle in system.particles)
             {
+                Console.Write("Here");
                 r.X = (int)particle.center.X;
                 r.Y = (int)particle.center.Y;
                 r.Width = (int)particle.size.X;

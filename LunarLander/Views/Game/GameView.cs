@@ -50,6 +50,24 @@ namespace LunarLander.Views.Game
             m_texBackground = contentManager.Load<Texture2D>("Images/space-background");
             m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
 
+            //Particles
+            m_particleSystemFire = new ParticleSystem(
+                    new Vector2(m_graphics.PreferredBackBufferWidth / 2, m_graphics.PreferredBackBufferHeight / 2),
+                    10, 4,
+                    0.12f, 0.05f,
+                    2000, 500);
+            m_renderFire = new ParticleSystemRenderer("Particles/fire");
+            m_renderFire.LoadContent(contentManager);
+
+            m_particleSystemSmoke = new ParticleSystem(
+                    new Vector2(m_graphics.PreferredBackBufferWidth / 2, m_graphics.PreferredBackBufferHeight / 2),
+                    15, 4,
+                    0.07f, 0.05f,
+                    3000, 1000);
+            m_renderSmoke = new ParticleSystemRenderer("Particles/smoke");
+            m_renderSmoke.LoadContent(contentManager);
+
+
             m_ship = new PlayerShip(new Vector2(80, 80));
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
 
@@ -58,7 +76,7 @@ namespace LunarLander.Views.Game
             m_speedString = $"Speed: {m_ship.convertToMeters()} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
 
-            setupTerrain();            
+            setupTerrain();
             m_inputKeyboard = new KeyboardInput();
             m_inputKeyboard.registerCommand(Keys.Right, false, new IInputDevice.CommandDelegate(m_ship.rotateRight));
             m_inputKeyboard.registerCommand(Keys.Left, false, new IInputDevice.CommandDelegate(m_ship.rotateLeft));
@@ -73,7 +91,7 @@ namespace LunarLander.Views.Game
         public override void render(GameTime gameTime)
         {
             m_spriteBatch.Begin();
-            if (!m_isBackgroundRendered) 
+            if (!m_isBackgroundRendered)
             {
                 m_spriteBatch.Draw(m_texBackground, m_rectBackground, Color.White);
                 m_isBackgroundRendered = true;
@@ -81,7 +99,11 @@ namespace LunarLander.Views.Game
             drawShip();
             drawTerrain();
             drawShipStatus();
+            Console.WriteLine("Here");
+            Debug.WriteLine("Here");
             m_spriteBatch.End();
+            m_renderSmoke.draw(m_spriteBatch, m_particleSystemSmoke);
+            m_renderFire.draw(m_spriteBatch, m_particleSystemFire);
         }
 
         public override void update(GameTime gameTime)
@@ -102,8 +124,8 @@ namespace LunarLander.Views.Game
             // Triangle Stuff
             m_vertsTriStrip = new VertexPositionColor[2 * m_points.Count];
             m_indexTriStrip = new int[2 * m_points.Count];
-            
-            for (int i = 0; i < m_points.Count - 1; i+=2)
+
+            for (int i = 0; i < m_points.Count - 1; i += 2)
             {
                 m_vertsTriStrip[i].Position = new Vector3(Convert.ToSingle(m_points[i].x), Convert.ToSingle(m_graphics.PreferredBackBufferHeight), -1); // point under triangle
                 m_vertsTriStrip[i].Color = new Color(46, 47, 52);
@@ -115,12 +137,12 @@ namespace LunarLander.Views.Game
                 m_indexTriStrip[i + 1] = i + 1;
 
                 //Connector point
-                m_vertsTriStrip[i + 2].Position = new Vector3(Convert.ToSingle(m_points[i + 1].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(m_points[i + 1].y),-1);
+                m_vertsTriStrip[i + 2].Position = new Vector3(Convert.ToSingle(m_points[i + 1].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(m_points[i + 1].y), -1);
                 m_vertsTriStrip[i + 2].Color = new Color(46, 47, 52);
                 m_indexTriStrip[i + 2] = i + 2;
             }
 
-            m_vertsTriStrip[m_points.Count].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight,-1);
+            m_vertsTriStrip[m_points.Count].Position = new Vector3(m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight, -1);
             m_vertsTriStrip[m_points.Count].Color = new Color(46, 47, 52);
             m_indexTriStrip[m_points.Count] = m_points.Count;
 
@@ -197,7 +219,7 @@ namespace LunarLander.Views.Game
                 m_antaFont,
                 m_angleString,
                 bottom,
-                m_ship.rotation >= 355 || m_ship.rotation <= 5  ? Color.Green : Color.White
+                m_ship.rotation >= 355 || m_ship.rotation <= 5 ? Color.Green : Color.White
             );
         }
 
@@ -205,11 +227,11 @@ namespace LunarLander.Views.Game
         {
             Vector2 stringSize = font.MeasureString(text);
             drawOutlineText(
-                m_spriteBatch, 
-                font, 
-                text, 
+                m_spriteBatch,
+                font,
+                text,
                 Color.Black,
-                color, 
+                color,
                 new Vector2(m_graphics.PreferredBackBufferWidth - stringSize.X - 10, y),
                 1f
             );
