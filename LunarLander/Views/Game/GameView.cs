@@ -42,6 +42,8 @@ namespace LunarLander.Views.Game
         private ParticleSystemRenderer m_renderSmoke;
 
         private bool m_isThrusting;
+        private Vector2 m_thrusterPos;
+        private Vector2 m_rotationDirection;
 
         public GameView()
         {
@@ -58,11 +60,11 @@ namespace LunarLander.Views.Game
             m_isThrusting = false;
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
             //Particles
-            Vector2 thrusterPos = new Vector2(0, (m_shipSize / 2) - 5);
-            Vector2 direction =  Vector2.Transform(thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
+            m_thrusterPos = new Vector2(0, (m_shipSize / 2) - 5);
+            m_rotationDirection =  Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
             m_particleSystemFire = new ParticleSystem(
                     new Vector2(m_ship.position.X, m_ship.position.Y),
-                    direction,
+                    m_rotationDirection,
                     10, 4,
                     0.12f, 0.05f,
                     300, 50);
@@ -71,7 +73,7 @@ namespace LunarLander.Views.Game
 
             m_particleSystemSmoke = new ParticleSystem(
                     new Vector2(m_ship.position.X, m_ship.position.Y),
-                    direction,
+                    m_rotationDirection,
                     10, 4,
                     0.07f, 0.05f,
                     300, 50);
@@ -119,12 +121,12 @@ namespace LunarLander.Views.Game
             m_inputKeyboard.Update();
             m_isThrusting = m_ship.isThrusting;
             m_ship.update(gameTime);
-            Vector2 thrusterPos = new Vector2(0, (m_shipSize / 2) - 5);
-            Vector2 rotationDirection = Vector2.Transform(thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
-            m_particleSystemFire.center = m_ship.position + rotationDirection;
-            m_particleSystemFire.direction = rotationDirection;
-            m_particleSystemSmoke.center = m_ship.position + rotationDirection;
-            m_particleSystemSmoke.direction = rotationDirection;
+            m_thrusterPos = new Vector2(0, (m_shipSize / 2) - 5);
+            m_rotationDirection = Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
+            m_particleSystemFire.center = m_ship.position + m_rotationDirection;
+            m_particleSystemFire.direction = m_rotationDirection;
+            m_particleSystemSmoke.center = m_ship.position + m_rotationDirection;
+            m_particleSystemSmoke.direction = m_rotationDirection;
             m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
             m_speedString = $"Speed: {m_ship.convertToMeters().ToString("F2")} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
