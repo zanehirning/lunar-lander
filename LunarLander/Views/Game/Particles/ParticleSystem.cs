@@ -11,17 +11,19 @@ namespace LunarLander.Views.Game.Particles
         public Dictionary<long, Particle>.ValueCollection particles { get { return m_particles.Values; } }
         private RandomNumberGenerator m_random = new RandomNumberGenerator();
 
-        private Vector2 m_center;
+        public Vector2 center;
         private int m_sizeMean; // pixels
         private int m_sizeStdDev;   // pixels
         private float m_speedMean;  // pixels per millisecond
         private float m_speedStDev; // pixles per millisecond
         private float m_lifetimeMean; // milliseconds
         private float m_lifetimeStdDev; // milliseconds
+        private Vector2 m_direction;
 
-        public ParticleSystem(Vector2 center, int sizeMean, int sizeStdDev, float speedMean, float speedStdDev, int lifetimeMean, int lifetimeStdDev)
+        public ParticleSystem(Vector2 center, Vector2 direction, int sizeMean, int sizeStdDev, float speedMean, float speedStdDev, int lifetimeMean, int lifetimeStdDev)
         {
-            m_center = center;
+            this.center = center;
+            m_direction = direction;
             m_sizeMean = sizeMean;
             m_sizeStdDev = sizeStdDev;
             m_speedMean = speedMean;
@@ -34,8 +36,8 @@ namespace LunarLander.Views.Game.Particles
         {
             float size = (float)m_random.nextGaussian(m_sizeMean, m_sizeStdDev);
             var p = new Particle(
-                    m_center,
-                    m_random.nextCircleVector(),
+                    center,
+                    m_random.nextVectorInDirection(m_direction),
                     (float)m_random.nextGaussian(m_speedMean, m_speedStDev),
                     new Vector2(size, size),
                     new System.TimeSpan(0, 0, 0, 0, (int)(m_random.nextGaussian(m_lifetimeMean, m_lifetimeStdDev)))); ;
@@ -62,7 +64,7 @@ namespace LunarLander.Views.Game.Particles
             }
 
             // Generate some new particles
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 4; i++)
             {
                 var particle = create();
                 m_particles.Add(particle.name, particle);

@@ -29,6 +29,7 @@ namespace LunarLander.Views.Game
         private String m_speedString;
         private String m_angleString;
         private SpriteFont m_antaFont;
+        private int m_shipSize;
 
         private Texture2D m_texShip;
         private Rectangle m_rectShip;
@@ -45,31 +46,34 @@ namespace LunarLander.Views.Game
         }
         public override void loadContent(ContentManager contentManager)
         {
+            m_shipSize = m_graphics.PreferredBackBufferWidth / 30;
             m_texShip = contentManager.Load<Texture2D>("Images/ship");
-            m_rectShip = new Rectangle(50, 50, 60, 60);
+            m_rectShip = new Rectangle(50, 50, m_shipSize, m_shipSize);
             m_texBackground = contentManager.Load<Texture2D>("Images/space-background");
             m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
 
+            m_ship = new PlayerShip(new Vector2(50, 50));
+            m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
             //Particles
+            Vector2 thrusterPos = new Vector2(0, (m_shipSize / 2) - 5);
+            Vector2 direction =  m_ship.position + Vector2.Transform(thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
             m_particleSystemFire = new ParticleSystem(
-                    new Vector2(m_graphics.PreferredBackBufferWidth / 2, m_graphics.PreferredBackBufferHeight / 2),
+                    new Vector2(m_ship.position.X, m_ship.position.Y),
+                    direction,
                     10, 4,
                     0.12f, 0.05f,
-                    2000, 500);
+                    300, 50);
             m_renderFire = new ParticleSystemRenderer("Particles/fire");
             m_renderFire.LoadContent(contentManager);
 
             m_particleSystemSmoke = new ParticleSystem(
-                    new Vector2(m_graphics.PreferredBackBufferWidth / 2, m_graphics.PreferredBackBufferHeight / 2),
-                    15, 4,
+                    new Vector2(m_ship.position.X, m_ship.position.Y),
+                    direction,
+                    10, 4,
                     0.07f, 0.05f,
-                    3000, 1000);
+                    300, 50);
             m_renderSmoke = new ParticleSystemRenderer("Particles/smoke");
             m_renderSmoke.LoadContent(contentManager);
-
-
-            m_ship = new PlayerShip(new Vector2(80, 80));
-            m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
 
             m_isBackgroundRendered = false;
             m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
@@ -90,6 +94,8 @@ namespace LunarLander.Views.Game
 
         public override void render(GameTime gameTime)
         {
+            m_renderSmoke.draw(m_spriteBatch, m_particleSystemSmoke);
+            m_renderFire.draw(m_spriteBatch, m_particleSystemFire);
             m_spriteBatch.Begin();
             if (!m_isBackgroundRendered)
             {
@@ -100,20 +106,20 @@ namespace LunarLander.Views.Game
             drawTerrain();
             drawShipStatus();
             m_spriteBatch.End();
-            m_renderSmoke.draw(m_spriteBatch, m_particleSystemSmoke);
-            m_renderFire.draw(m_spriteBatch, m_particleSystemFire);
         }
 
         public override void update(GameTime gameTime)
         {
             m_inputKeyboard.Update();
             m_ship.update(gameTime);
+            Vector2 thrusterPos = new Vector2(0, (m_shipSize / 2) - 5);
+            m_particleSystemFire.center = m_ship.position + Vector2.Transform(thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
+            m_particleSystemSmoke.center = m_ship.position + Vector2.Transform(thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
             m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
             m_speedString = $"Speed: {m_ship.convertToMeters().ToString("F2")} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
             m_particleSystemFire.update(gameTime);
             m_particleSystemSmoke.update(gameTime);
-
         }
 
         private void setupTerrain()

@@ -20,6 +20,14 @@ namespace LunarLander.Views.Game.RandomGenerator
             return new Vector2(x, y);
         }
 
+        public Vector2 nextVectorInDirection(Vector2 direction) 
+        {
+            direction.X += Convert.ToSingle(this.nextGaussian(1, 1));
+            direction.Y += Convert.ToSingle(this.nextGaussian(1, 1));
+            direction.Normalize();
+            return direction;
+        }
+
         public double nextGaussian(double mean, double stdDev)
         {
             if (this.usePrevious)
