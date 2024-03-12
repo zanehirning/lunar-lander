@@ -22,8 +22,8 @@ namespace LunarLander.Views.Game.RandomGenerator
 
         public Vector2 nextVectorInDirection(Vector2 direction) 
         {
-            direction.X += Convert.ToSingle(this.nextGaussian(1, 1));
-            direction.Y += Convert.ToSingle(this.nextGaussian(1, 1));
+            direction.X += Convert.ToSingle(this.nextGaussian(2, 5));
+            direction.Y += Convert.ToSingle(this.nextGaussian(2, 5));
             direction.Normalize();
             return direction;
         }

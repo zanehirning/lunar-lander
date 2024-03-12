@@ -18,12 +18,12 @@ namespace LunarLander.Views.Game.Particles
         private float m_speedStDev; // pixles per millisecond
         private float m_lifetimeMean; // milliseconds
         private float m_lifetimeStdDev; // milliseconds
-        private Vector2 m_direction;
+        public Vector2 direction;
 
         public ParticleSystem(Vector2 center, Vector2 direction, int sizeMean, int sizeStdDev, float speedMean, float speedStdDev, int lifetimeMean, int lifetimeStdDev)
         {
             this.center = center;
-            m_direction = direction;
+            this.direction = direction;
             m_sizeMean = sizeMean;
             m_sizeStdDev = sizeStdDev;
             m_speedMean = speedMean;
@@ -37,7 +37,7 @@ namespace LunarLander.Views.Game.Particles
             float size = (float)m_random.nextGaussian(m_sizeMean, m_sizeStdDev);
             var p = new Particle(
                     center,
-                    m_random.nextVectorInDirection(m_direction),
+                    m_random.nextVectorInDirection(direction),
                     (float)m_random.nextGaussian(m_speedMean, m_speedStDev),
                     new Vector2(size, size),
                     new System.TimeSpan(0, 0, 0, 0, (int)(m_random.nextGaussian(m_lifetimeMean, m_lifetimeStdDev)))); ;

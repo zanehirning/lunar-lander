@@ -16,7 +16,7 @@ namespace LunarLander.Views.Game.Ship
         public float thrust = .01f;
         public Vector2 GRAVITY = new Vector2(0, .005f);
         public double fuel = 20;
-        private bool isThrusting = false;
+        public bool isThrusting = false;
 
         public PlayerShip(Vector2 position) 
         {
