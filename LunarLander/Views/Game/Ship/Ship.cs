@@ -26,20 +26,20 @@ namespace LunarLander.Views.Game.Ship
 
         public void rotateRight()
         {
-            rotation += 1.14f;
+            rotation += 1f; //original was 1.14f
             rotation = (360 + rotation) % 360;
         }
         public void rotateLeft()
         {
-            rotation -= 1.14f;
+            rotation -= 1f; //original was 1.14f
             rotation = (360 + rotation) % 360;
         }
 
         public void applyThrust()
         {
-            isThrusting = true;
             if (fuel > 0)
             {
+                isThrusting = true;
                 float xThrust = thrust * (float)Math.Sin((rotation / 180) * Math.PI);
                 float yThrust = thrust * (float)Math.Cos((rotation / 180) * Math.PI);
 

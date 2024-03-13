@@ -49,8 +49,8 @@ namespace LunarLander.Views.Game
         }
         public override void loadContent(ContentManager contentManager)
         {
-            m_shipSize = m_graphics.PreferredBackBufferWidth / 30;
-            m_texShip = contentManager.Load<Texture2D>("Images/ship");
+            m_shipSize = m_graphics.PreferredBackBufferWidth / 45;
+            m_texShip = contentManager.Load<Texture2D>("Images/ship-2");
             m_rectShip = new Rectangle(50, 50, m_shipSize, m_shipSize);
             m_texBackground = contentManager.Load<Texture2D>("Images/space-background");
             m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
@@ -58,7 +58,7 @@ namespace LunarLander.Views.Game
             m_ship = new PlayerShip(new Vector2(50, 50));
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
             //Particles
-            m_thrusterPos = new Vector2(0, (m_shipSize / 2) - 5);
+            m_thrusterPos = new Vector2(0, (m_shipSize / 2));
             m_rotationDirection =  Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
             m_particleSystemFire = new ParticleSystem(
                     new Vector2(m_ship.position.X, m_ship.position.Y),
@@ -117,7 +117,7 @@ namespace LunarLander.Views.Game
             m_particleSystemFire.shouldCreate = m_ship.isThrusting;
             m_particleSystemSmoke.shouldCreate =  m_ship.isThrusting;
             m_ship.update(gameTime);
-            m_thrusterPos = new Vector2(0, (m_shipSize / 2) - 5);
+            m_thrusterPos = new Vector2(0, (m_shipSize / 2));
             m_rotationDirection = Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
             m_particleSystemFire.center = m_ship.position + m_rotationDirection;
             m_particleSystemFire.direction = m_rotationDirection;
