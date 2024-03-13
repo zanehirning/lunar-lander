@@ -120,9 +120,13 @@ namespace LunarLander.Views.Game
             m_particleSystemSmoke.shouldCreate =  m_ship.isThrusting;
             m_ship.update(gameTime);
             m_shipCircle.center = new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y);
-            if (m_terrain.isIntersecting(m_shipCircle)) 
+            Debug.WriteLine($"{m_shipCircle.center.x}, {m_shipCircle.center.y}, {m_shipCircle.radius}");
+            for (int i = 0; i < m_points.Count - 1; i++) 
             {
-                Debug.WriteLine("Intersected!");
+                if (m_terrain.isIntersecting(m_points[i], m_points[i + 1], m_shipCircle)) 
+                {
+                    Debug.WriteLine("Intersected!");
+                }
             }
             m_thrusterPos = new Vector2(0, (m_shipSize / 2));
             m_rotationDirection = Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
@@ -130,7 +134,7 @@ namespace LunarLander.Views.Game
             m_particleSystemFire.direction = m_rotationDirection;
             m_particleSystemSmoke.center = m_ship.position + m_rotationDirection;
             m_particleSystemSmoke.direction = m_rotationDirection;
-            m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
+            m_fuelString = $"Fuel: {Math.Abs(m_ship.fuel).ToString("F2")} s";
             m_speedString = $"Speed: {m_ship.convertToMeters().ToString("F2")} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
             m_particleSystemFire.update(gameTime);
