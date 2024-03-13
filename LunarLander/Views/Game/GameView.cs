@@ -30,6 +30,7 @@ namespace LunarLander.Views.Game
         private String m_angleString;
         private SpriteFont m_antaFont;
         private int m_shipSize;
+        private TerrainGenerator.Circle m_shipCircle;
 
         private Texture2D m_texShip;
         private Rectangle m_rectShip;
@@ -52,11 +53,12 @@ namespace LunarLander.Views.Game
             m_shipSize = m_graphics.PreferredBackBufferWidth / 45;
             m_texShip = contentManager.Load<Texture2D>("Images/ship-2");
             m_rectShip = new Rectangle(50, 50, m_shipSize, m_shipSize);
-            m_texBackground = contentManager.Load<Texture2D>("Images/space-background");
+            m_texBackground = contentManager.Load<Texture2D>("Images/background-2");
             m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
 
-            m_ship = new PlayerShip(new Vector2(50, 50));
+            m_ship = new PlayerShip(new Vector2(50 + m_shipSize / 2, 50 + m_shipSize / 2));
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
+            m_shipCircle = new TerrainGenerator.Circle(new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y), m_shipSize / 2);
             //Particles
             m_thrusterPos = new Vector2(0, (m_shipSize / 2));
             m_rotationDirection =  Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
@@ -117,6 +119,11 @@ namespace LunarLander.Views.Game
             m_particleSystemFire.shouldCreate = m_ship.isThrusting;
             m_particleSystemSmoke.shouldCreate =  m_ship.isThrusting;
             m_ship.update(gameTime);
+            m_shipCircle.center = new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y);
+            if (m_terrain.isIntersecting(m_shipCircle)) 
+            {
+                Debug.WriteLine("Intersected!");
+            }
             m_thrusterPos = new Vector2(0, (m_shipSize / 2));
             m_rotationDirection = Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
             m_particleSystemFire.center = m_ship.position + m_rotationDirection;

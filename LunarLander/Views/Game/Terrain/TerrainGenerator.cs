@@ -101,9 +101,28 @@ namespace LunarLander.Views.Game.Terrain
             }
         }
 
-        public bool isIntersecting() 
+        public bool isIntersecting(Point pt1, Point pt2, Circle circle) 
         {
-            
+            Point v1 = new Point(pt2.x - pt1.x, pt2.y - pt1.y);
+            Point v2 = new Point(pt1.x - circle.center.x, pt1.y - circle.center.y);
+            double b = -2 * (v1.x * v2.x + v1.y * v2.y);
+            double c = 2 * (v1.x * v1.x + v1.y * v1.y); // maybe wrong?
+            double d = Math.Sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
+            if (Double.IsNaN(d))
+            {
+                return false;
+            }
+
+            double u1 = (b - d) / c;
+            double u2 = (b + d) / c;
+            if (u1 <= 1 && u1 >= 0) 
+            {
+                return true;
+            }
+            if (u2 <= 1 && u2 >= 0) 
+            {
+                return true;
+            }
             return false;
         }
 
@@ -153,8 +172,8 @@ namespace LunarLander.Views.Game.Terrain
 
         public struct Circle
         {
-            public Point center;
-            public double radius;
+            public Point center { get; set; }
+            public double radius { get; set; }
 
             public Circle(Point center, double radius)
             {
