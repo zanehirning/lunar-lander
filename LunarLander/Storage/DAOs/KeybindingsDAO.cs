@@ -14,13 +14,13 @@ namespace LunarLander.Storage
     {
         private bool loading = false;
         private bool saving = false;
-        private Keybindings m_loadedState = null;
+        public Keybindings loadedKeybindingState = null;
 
         public KeybindingsDAO() 
         {
         }
 
-        public void saveKeybind(String control, Keys key)
+        public void saveKeybind(Dictionary<String, Keys> keybindings)
         {
             lock (this)
             {
@@ -29,7 +29,7 @@ namespace LunarLander.Storage
                     this.saving = true;
 
                     // Create something to save
-                    Keybindings keybindingState = new Keybindings(control, key);
+                    Keybindings keybindingState = new Keybindings(keybindings);
 
                     // Yes, I know the result is not being saved, I dont' need it
                     finalizeSaveAsync(keybindingState);
@@ -45,7 +45,7 @@ namespace LunarLander.Storage
                 {
                     try
                     {
-                        using (IsolatedStorageFileStream fs = storage.OpenFile("Keybindings.json", FileMode.Append))
+                        using (IsolatedStorageFileStream fs = storage.OpenFile("Keybindings.json", FileMode.Create))
                         {
                             if (fs != null)
                             {
@@ -63,7 +63,7 @@ namespace LunarLander.Storage
             });
         }
 
-        private void loadSomething()
+        public void loadKeybinds()
         {
             lock (this)
             {
@@ -88,20 +88,14 @@ namespace LunarLander.Storage
                     {
                         if (storage.FileExists("Keybindings.json"))
                         {
-                            using (IsolatedStorageFileStream fs = storage.OpenFile("HighScores.json", FileMode.Open))
+                            using (IsolatedStorageFileStream fs = storage.OpenFile("Keybindings.json", FileMode.Open))
                             {
                                 if (fs != null)
                                 {
                                     DataContractJsonSerializer mySerializer = new DataContractJsonSerializer(typeof(Keybindings));
-                                    m_loadedState = (Keybindings)mySerializer.ReadObject(fs);
+                                    loadedKeybindingState = (Keybindings)mySerializer.ReadObject(fs);
                                 }
                             }
-                        }
-                        else 
-                        {
-                            // No file exists, this will be used to default the keybindings.
-                            // I could save defaults right here in this block - consider this possibility
-                            throw new FileNotFoundException();
                         }
                     }
                     catch (IsolatedStorageException)
@@ -111,7 +105,6 @@ namespace LunarLander.Storage
                 this.loading = false;
             });
         }
-
     }
 }
 

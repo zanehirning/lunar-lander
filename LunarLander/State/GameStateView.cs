@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Runtime.Serialization;
 using LunarLander.Storage;
+using System.Diagnostics;
 
 namespace LunarLander.State
 {
@@ -40,6 +43,16 @@ namespace LunarLander.State
                     0.1f, 2)
             };
             m_keybindingsDAO = new KeybindingsDAO();
+            m_keybindingsDAO.loadKeybinds();
+            if (m_keybindingsDAO.loadedKeybindingState == null) 
+            {
+                Dictionary<String, Keys> keybindings = new Dictionary<String, Keys>();
+                keybindings["thrust"] = Keys.Up;
+                keybindings["RotateLeft"] = Keys.Left;
+                keybindings["RotateRight"] = Keys.Right;
+                m_keybindingsDAO.saveKeybind(keybindings);
+            }
+            m_keybindingsDAO.loadKeybinds();
         }
         public abstract void loadContent(ContentManager contentManager);
         public abstract GameStateEnum processInput(GameTime gameTime);

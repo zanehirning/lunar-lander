@@ -11,18 +11,12 @@ namespace LunarLander.Storage
         public Keybindings() {
         }
 
-        public Keybindings(String control, Keys key)
+        public Keybindings(Dictionary<String, Keys> keybindings)
         {
-            this.Control = control;
-            this.Key = key;
 
-            this.keys.Add(control, key);
+            this.keys = keybindings;
         }
 
-        [DataMember()]
-        public string Control { get; set; }
-        [DataMember()] 
-        public Keys Key { get; set; }
         [DataMember()]
         public Dictionary<String, Keys> keys = new Dictionary<String, Keys>();
     }

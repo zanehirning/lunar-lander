@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,14 +47,17 @@ namespace LunarLander.Views.Settings
                 {
                     case SettingsStateEnum.Thrust: 
                         {
+                            setKeybinding("thrust");
                             return GameStateEnum.Settings;
                         };
                     case SettingsStateEnum.RotateLeft: 
                         {
+                            setKeybinding("RotateLeft");
                             return GameStateEnum.Settings;
                         };
                     case SettingsStateEnum.RotateRight: 
                         {
+                            setKeybinding("RotateRight");
                             return GameStateEnum.Settings;
                         };
                 }
@@ -65,14 +69,44 @@ namespace LunarLander.Views.Settings
         {
             m_spriteBatch.Begin();
             drawPlanet();
-            float bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.Thrust ? m_menuSelectFont : m_menuFont, "Thrust: ", m_graphics.PreferredBackBufferHeight / 2, m_currentSelection == SettingsStateEnum.Thrust ? new Color(1, 59, 89) : Color.White);
-            bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.RotateLeft ? m_menuSelectFont : m_menuFont, "Rotate Left: ", bottom, m_currentSelection == SettingsStateEnum.RotateLeft ? new Color(1, 59, 89) : Color.White);
-            bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.RotateRight ? m_menuSelectFont : m_menuFont, "Rotate Right: ", bottom, m_currentSelection == SettingsStateEnum.RotateRight ? new Color(1, 59, 89) : Color.White);
+            if (m_keybindingsDAO.loadedKeybindingState != null) 
+            {
+                float bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.Thrust ? m_menuSelectFont : m_menuFont, $"Thrust: {m_keybindingsDAO.loadedKeybindingState.keys["thrust"]}", m_graphics.PreferredBackBufferHeight / 2, m_currentSelection == SettingsStateEnum.Thrust ? new Color(1, 59, 89) : Color.White);
+                bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.RotateLeft ? m_menuSelectFont : m_menuFont, $"Rotate Left: {m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"]}", bottom, m_currentSelection == SettingsStateEnum.RotateLeft ? new Color(1, 59, 89) : Color.White);
+                bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.RotateRight ? m_menuSelectFont : m_menuFont, $"Rotate Right: {m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"]}", bottom, m_currentSelection == SettingsStateEnum.RotateRight ? new Color(1, 59, 89) : Color.White);
+            }
             m_spriteBatch.End();
         }
 
         public override void update(GameTime gameTime)
         {
+        }
+
+        private void setKeybinding(String control) 
+        {
+            KeyboardState previousKeyboardState = Keyboard.GetState();
+            m_inputKeyboard.unregisterCommand(Keys.Up);
+            m_inputKeyboard.unregisterCommand(Keys.Down);
+            while (true) {
+                KeyboardState currentKeyboardState = Keyboard.GetState();
+                List<Keys> pressedKeys = currentKeyboardState.GetPressedKeys().ToList();
+                pressedKeys.RemoveAll(key => previousKeyboardState.GetPressedKeys().Contains(key));
+                if (pressedKeys.Count >= 1) 
+                {
+                    Keys bindedKey = pressedKeys[0];
+                    if (bindedKey != Keys.Escape) 
+                    {
+                        Dictionary<String, Keys> prevBindings = m_keybindingsDAO.loadedKeybindingState.keys;
+                        prevBindings[control] = bindedKey;
+                        m_keybindingsDAO.saveKeybind(prevBindings);
+                        m_keybindingsDAO.loadKeybinds();
+                        break;
+                    }
+                    break;
+                }
+            } 
+            m_inputKeyboard.registerCommand(Keys.Down, true, new IInputDevice.CommandDelegate(menuDown));
+            m_inputKeyboard.registerCommand(Keys.Up, true, new IInputDevice.CommandDelegate(menuUp));
         }
 
         private float drawMenuItem(SpriteFont font, string text, float y, Color color)
