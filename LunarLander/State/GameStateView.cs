@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using System.Runtime.Serialization;
+using LunarLander.Storage;
 
 namespace LunarLander.State
 {
@@ -14,6 +16,7 @@ namespace LunarLander.State
         protected GraphicsDeviceManager m_graphics;
         protected SpriteBatch m_spriteBatch;
         protected BasicEffect m_effect;
+        protected KeybindingsDAO m_keybindingsDAO;
 
         public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics)
         {
@@ -36,7 +39,7 @@ namespace LunarLander.State
                     m_graphics.GraphicsDevice.Viewport.Height, 0,   // doing this to get it to match the default of upper left of (0, 0)
                     0.1f, 2)
             };
-
+            m_keybindingsDAO = new KeybindingsDAO();
         }
         public abstract void loadContent(ContentManager contentManager);
         public abstract GameStateEnum processInput(GameTime gameTime);

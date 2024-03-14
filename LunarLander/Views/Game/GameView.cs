@@ -22,6 +22,8 @@ namespace LunarLander.Views.Game
         private int[] m_indexLineStrip;
         private VertexPositionColor[] m_vertsTriStrip;
         private int[] m_indexTriStrip;
+        private VertexPositionColor[] m_vertsCircleStrip;
+        private int[] m_indexCircleStrip;
         private KeyboardInput m_inputKeyboard;
         private PlayerShip m_ship;
         private bool m_isBackgroundRendered;
@@ -80,6 +82,9 @@ namespace LunarLander.Views.Game
             m_renderSmoke = new ParticleSystemRenderer("Particles/smoke");
             m_renderSmoke.LoadContent(contentManager);
 
+            m_indexCircleStrip = new int[360];
+            m_vertsCircleStrip = new VertexPositionColor[360];
+
             m_isBackgroundRendered = false;
             m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
             m_speedString = $"Speed: {m_ship.convertToMeters()} m/s";
@@ -120,7 +125,6 @@ namespace LunarLander.Views.Game
             m_particleSystemSmoke.shouldCreate =  m_ship.isThrusting;
             m_ship.update(gameTime);
             m_shipCircle.center = new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y);
-            Debug.WriteLine($"{m_shipCircle.center.x}, {m_shipCircle.center.y}, {m_shipCircle.radius}");
             for (int i = 0; i < m_points.Count - 1; i++) 
             {
                 if (m_terrain.isIntersecting(m_points[i], m_points[i + 1], m_shipCircle)) 
@@ -128,6 +132,17 @@ namespace LunarLander.Views.Game
                     Debug.WriteLine("Intersected!");
                 }
             }
+
+            //circle strip for testing
+            m_indexCircleStrip = new int[360];
+            m_vertsCircleStrip = new VertexPositionColor[360];
+            for (int i = 0; i < 360; i++)
+            {
+                m_indexCircleStrip[i] = i;
+                m_vertsCircleStrip[i].Position = new Vector3(Convert.ToSingle(m_shipCircle.center.x + (m_shipCircle.radius * Math.Cos((float) i/180 * Math.PI))), Convert.ToSingle(m_shipCircle.center.y + (m_shipCircle.radius * Math.Sin((float)i/180 * Math.PI))), 0);
+                m_vertsCircleStrip[i].Color = Color.Red;
+            }
+
             m_thrusterPos = new Vector2(0, (m_shipSize / 2));
             m_rotationDirection = Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
             m_particleSystemFire.center = m_ship.position + m_rotationDirection;
@@ -201,6 +216,13 @@ namespace LunarLander.Views.Game
             foreach (EffectPass pass in m_effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
+                //Circle drawing for testing
+                m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
+                        PrimitiveType.LineStrip,
+                        m_vertsCircleStrip, 0, m_vertsCircleStrip.Length - 1,
+                        m_indexCircleStrip, 0, m_indexCircleStrip.Length - 1
+                );
+
                 m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
                     PrimitiveType.TriangleStrip,
                     m_vertsTriStrip, 0, m_points.Count + 1,
