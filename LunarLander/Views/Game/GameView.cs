@@ -18,6 +18,8 @@ namespace LunarLander.Views.Game
     {
         TerrainGenerator m_terrain;
         List<TerrainGenerator.Point> m_points;
+        private bool m_gameOver = false;
+        private bool m_shipLanded = false;
         private VertexPositionColor[] m_vertsLineStrip;
         private int[] m_indexLineStrip;
         private VertexPositionColor[] m_vertsTriStrip;
@@ -43,6 +45,8 @@ namespace LunarLander.Views.Game
         private ParticleSystem m_particleSystemSmoke;
         private ParticleSystemRenderer m_renderFire;
         private ParticleSystemRenderer m_renderSmoke;
+        private ParticleSystem m_particleSystemCrash;
+        private ParticleSystemRenderer m_renderCrash;
 
         private Vector2 m_thrusterPos;
         private Vector2 m_rotationDirection;
@@ -68,7 +72,7 @@ namespace LunarLander.Views.Game
                     new Vector2(m_ship.position.X, m_ship.position.Y),
                     m_rotationDirection,
                     10, 4,
-                    0.12f, 0.05f,
+                    0.2f, 0.05f,
                     300, 50);
             m_renderFire = new ParticleSystemRenderer("Particles/fire");
             m_renderFire.LoadContent(contentManager);
@@ -77,10 +81,18 @@ namespace LunarLander.Views.Game
                     new Vector2(m_ship.position.X, m_ship.position.Y),
                     m_rotationDirection,
                     10, 4,
-                    0.07f, 0.05f,
+                    0.16f, 0.05f,
                     300, 50);
             m_renderSmoke = new ParticleSystemRenderer("Particles/smoke");
             m_renderSmoke.LoadContent(contentManager);
+
+            m_particleSystemCrash = new ParticleSystem(
+                    new Vector2(m_ship.position.X, m_ship.position.Y),
+                    10, 4,
+                    0.2f, 0.05f,
+                    300, 50);
+            m_renderCrash = new ParticleSystemRenderer("Particles/fire");
+            m_renderCrash.LoadContent(contentManager);
 
             m_indexCircleStrip = new int[360];
             m_vertsCircleStrip = new VertexPositionColor[360];
@@ -115,32 +127,44 @@ namespace LunarLander.Views.Game
                 m_spriteBatch.Draw(m_texBackground, m_rectBackground, Color.White);
                 m_isBackgroundRendered = true;
             }
-            drawShip();
-            drawTerrain();
+            if (!m_gameOver)
+            {
+                drawShip();
+            }
             drawShipStatus();
+            drawTerrain();
             m_spriteBatch.End();
             m_renderSmoke.draw(m_spriteBatch, m_particleSystemSmoke);
             m_renderFire.draw(m_spriteBatch, m_particleSystemFire);
+            m_renderCrash.draw(m_spriteBatch, m_particleSystemCrash);
         }
 
         public override void update(GameTime gameTime)
         {
+            m_shipCircle.center = new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y);
+            for (int i = 0; i < m_points.Count - 1; i++) 
+            {
+                if (m_ship.canLand && m_terrain.isIntersecting(m_points[i], m_points[i + 1], m_shipCircle)) 
+                {
+                    m_shipLanded = true;
+                    m_gameOver = true;
+                }
+                else if (m_terrain.isIntersecting(m_points[i], m_points[i+1], m_shipCircle)) 
+                {
+                    m_particleSystemCrash.shipCrash();
+                    m_gameOver = true;
+                }
+            }
+
             m_inputKeyboard.Update();
+
             if (m_ship.isThrusting) 
             {
                 m_particleSystemFire.shipThrust();
                 m_particleSystemSmoke.shipThrust();
+                Debug.WriteLine("Thrusting");
             }
             m_ship.update(gameTime);
-            m_shipCircle.center = new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y);
-            for (int i = 0; i < m_points.Count - 1; i++) 
-            {
-                if (m_terrain.isIntersecting(m_points[i], m_points[i + 1], m_shipCircle)) 
-                {
-                    Debug.WriteLine("Intersected!");
-                }
-            }
-
             //circle strip for testing
             m_indexCircleStrip = new int[360];
             m_vertsCircleStrip = new VertexPositionColor[360];
@@ -157,11 +181,13 @@ namespace LunarLander.Views.Game
             m_particleSystemFire.direction = m_rotationDirection;
             m_particleSystemSmoke.center = m_ship.position + m_rotationDirection;
             m_particleSystemSmoke.direction = m_rotationDirection;
+            m_particleSystemCrash.center = m_ship.position;
             m_fuelString = $"Fuel: {Math.Abs(m_ship.fuel).ToString("F2")} s";
             m_speedString = $"Speed: {m_ship.convertToMeters().ToString("F2")} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
             m_particleSystemFire.update(gameTime);
             m_particleSystemSmoke.update(gameTime);
+            m_particleSystemCrash.update(gameTime);
         }
 
         private void setupTerrain()

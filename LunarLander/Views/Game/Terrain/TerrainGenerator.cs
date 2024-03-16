@@ -39,7 +39,6 @@ namespace LunarLander.Views.Game.Terrain
             double midPointX = (left.x + right.x) / 2;
             double midPointY = (left.y + right.y) / 2;
             double r = s * (rand.nextGaussian(0, 1) * Math.Abs(left.x - right.x));
-            Debug.WriteLine(r);
             r = r > bufferHeight / 5 ? bufferHeight / 5 : r; //put a max displacement
             r = r < -bufferHeight / 5 ? -bufferHeight / 45 : r;
             double pointHeight = midPointY + r;
