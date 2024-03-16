@@ -19,7 +19,6 @@ namespace LunarLander.Views.Game.Particles
         private float m_lifetimeMean; // milliseconds
         private float m_lifetimeStdDev; // milliseconds
         public Vector2 direction;
-        public bool shouldCreate = false;
 
         public ParticleSystem(Vector2 center, Vector2 direction, int sizeMean, int sizeStdDev, float speedMean, float speedStdDev, int lifetimeMean, int lifetimeStdDev)
         {
@@ -46,6 +45,15 @@ namespace LunarLander.Views.Game.Particles
             return p;
         }
 
+        public void shipThrust() 
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                var particle = create();
+                m_particles.Add(particle.name, particle);
+            }
+        }
+
         public void update(GameTime gameTime)
         {
             // Update existing particles
@@ -64,15 +72,6 @@ namespace LunarLander.Views.Game.Particles
                 m_particles.Remove(key);
             }
 
-            // Generate some new particles
-            if (shouldCreate)
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    var particle = create();
-                    m_particles.Add(particle.name, particle);
-                }
-            }
         }
     }
 }

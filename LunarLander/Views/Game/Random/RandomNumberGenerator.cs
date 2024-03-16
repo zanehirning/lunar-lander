@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace LunarLander.Views.Game.RandomGenerator
 {
-    class RandomNumberGenerator : Random
+    public class RandomNumberGenerator : Random
     {
 
         public float nextRange(float min, float max)

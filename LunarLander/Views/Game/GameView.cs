@@ -91,14 +91,19 @@ namespace LunarLander.Views.Game
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
 
             setupTerrain();
+            //KeyboardInput
             m_inputKeyboard = new KeyboardInput();
-            m_inputKeyboard.registerCommand(Keys.Right, false, new IInputDevice.CommandDelegate(m_ship.rotateRight));
-            m_inputKeyboard.registerCommand(Keys.Left, false, new IInputDevice.CommandDelegate(m_ship.rotateLeft));
-            m_inputKeyboard.registerCommand(Keys.Up, false, new IInputDevice.CommandDelegate(m_ship.applyThrust));
+            m_keybindingsDAO.loadKeybinds();
+            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"], false, new IInputDevice.CommandDelegate(m_ship.rotateRight));
+            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"], false, new IInputDevice.CommandDelegate(m_ship.rotateLeft));
+            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["thrust"], false, new IInputDevice.CommandDelegate(m_ship.applyThrust));
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) {
+                    return GameStateEnum.MainMenu;
+            }
             return GameStateEnum.Game;
         }
 
@@ -121,8 +126,11 @@ namespace LunarLander.Views.Game
         public override void update(GameTime gameTime)
         {
             m_inputKeyboard.Update();
-            m_particleSystemFire.shouldCreate = m_ship.isThrusting;
-            m_particleSystemSmoke.shouldCreate =  m_ship.isThrusting;
+            if (m_ship.isThrusting) 
+            {
+                m_particleSystemFire.shipThrust();
+                m_particleSystemSmoke.shipThrust();
+            }
             m_ship.update(gameTime);
             m_shipCircle.center = new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y);
             for (int i = 0; i < m_points.Count - 1; i++) 
@@ -173,12 +181,12 @@ namespace LunarLander.Views.Game
                 m_indexTriStrip[i] = i;
 
                 // Actual Point
-                m_vertsTriStrip[i + 1].Position = new Vector3(Convert.ToSingle(m_points[i].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(m_points[i].y), -1);
+                m_vertsTriStrip[i + 1].Position = new Vector3(Convert.ToSingle(m_points[i].x), Convert.ToSingle(m_points[i].y), -1);
                 m_vertsTriStrip[i + 1].Color = new Color(46, 47, 52);
                 m_indexTriStrip[i + 1] = i + 1;
 
                 //Connector point
-                m_vertsTriStrip[i + 2].Position = new Vector3(Convert.ToSingle(m_points[i + 1].x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(m_points[i + 1].y), -1);
+                m_vertsTriStrip[i + 2].Position = new Vector3(Convert.ToSingle(m_points[i + 1].x), Convert.ToSingle(m_points[i + 1].y), -1);
                 m_vertsTriStrip[i + 2].Color = new Color(46, 47, 52);
                 m_indexTriStrip[i + 2] = i + 2;
             }
@@ -204,7 +212,7 @@ namespace LunarLander.Views.Game
             for (int i = 0; i < m_points.Count; i++)
             {
                 TerrainGenerator.Point point = m_points[i];
-                m_vertsLineStrip[i + 1].Position = new Vector3(Convert.ToSingle(point.x), m_graphics.PreferredBackBufferHeight - Convert.ToSingle(point.y), point.z);
+                m_vertsLineStrip[i + 1].Position = new Vector3(Convert.ToSingle(point.x), Convert.ToSingle(point.y), point.z);
                 m_vertsLineStrip[i + 1].Color = new Color(113, 116, 128);
                 m_indexLineStrip[i + 1] = i + 1;
             }
