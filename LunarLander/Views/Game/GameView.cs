@@ -339,6 +339,8 @@ namespace LunarLander.Views.Game
                         m_particleSystemCrash.shipCrash();
                         m_gameOver = true;
                         elapsedCountdown = 3000;
+                        internalUpdate = updateGameOver;
+                        internalRender = renderGameOver;
                     }
                 }
             }
@@ -440,7 +442,7 @@ namespace LunarLander.Views.Game
 
         private void updateGameOver(GameTime gameTime) 
         {
-
+            m_particleSystemCrash.update(gameTime);
         }
 
         private void renderGameOver() 
@@ -479,6 +481,7 @@ namespace LunarLander.Views.Game
             );
             drawTerrain();
             m_spriteBatch.End();
+            m_renderCrash.draw(m_spriteBatch, m_particleSystemCrash);
         }
         #endregion
     }
