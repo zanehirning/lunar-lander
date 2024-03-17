@@ -53,6 +53,7 @@ namespace LunarLander.State
                 m_keybindingsDAO.saveKeybind(keybindings);
             }
             m_keybindingsDAO.loadKeybinds();
+            Debug.WriteLine("Loaded");
         }
         public abstract void loadContent(ContentManager contentManager);
         public abstract GameStateEnum processInput(GameTime gameTime);

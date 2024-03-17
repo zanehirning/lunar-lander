@@ -58,7 +58,7 @@ namespace LunarLander.Views.Game.Particles
 
         public void shipCrash() 
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 60; i++)
             {
                 var particle = create(m_random.nextCircleVector());
                 m_particles.Add(particle.name, particle);

@@ -58,6 +58,7 @@ namespace LunarLander.Input
             }
             m_statePrevious = state;
         }
+
         private bool keyPressed(Keys key)
         {
             return (Keyboard.GetState().IsKeyDown(key) && !m_statePrevious.IsKeyDown(key));

@@ -73,7 +73,6 @@ namespace LunarLander.Storage
                     // Yes, I know the result is not being saved, I dont' need it
                     var result = finalizeLoadAsync();
                     result.Wait();
-
                 }
             }
         }

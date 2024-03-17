@@ -22,6 +22,7 @@ namespace LunarLander.Views.Settings
         private Rectangle m_rectPlanet;
         private SettingsStateEnum m_currentSelection = SettingsStateEnum.Thrust;
         private KeyboardInput m_inputKeyboard;
+        private bool m_isSettingKeybind = false;
 
         public override void loadContent(ContentManager contentManager)
         {
@@ -41,22 +42,25 @@ namespace LunarLander.Views.Settings
             {
                 return GameStateEnum.MainMenu;
             }
-            if (Keyboard.GetState().IsKeyUp(Keys.Enter))
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
             {
                 switch (m_currentSelection)
                 {
                     case SettingsStateEnum.Thrust: 
                         {
+                            m_isSettingKeybind = true;
                             setKeybinding("thrust");
                             return GameStateEnum.Settings;
                         };
                     case SettingsStateEnum.RotateLeft: 
                         {
+                            m_isSettingKeybind = true;
                             setKeybinding("RotateLeft");
                             return GameStateEnum.Settings;
                         };
                     case SettingsStateEnum.RotateRight: 
                         {
+                            m_isSettingKeybind = true;
                             setKeybinding("RotateRight");
                             return GameStateEnum.Settings;
                         };
@@ -84,25 +88,25 @@ namespace LunarLander.Views.Settings
 
         private void setKeybinding(String control) 
         {
-            KeyboardState previousKeyboardState = Keyboard.GetState();
             m_inputKeyboard.unregisterCommand(Keys.Up);
             m_inputKeyboard.unregisterCommand(Keys.Down);
-            while (true) {
-                KeyboardState currentKeyboardState = Keyboard.GetState();
-                List<Keys> pressedKeys = currentKeyboardState.GetPressedKeys().ToList();
-                pressedKeys.RemoveAll(key => previousKeyboardState.GetPressedKeys().Contains(key));
-                if (pressedKeys.Count >= 1) 
+            if (m_isSettingKeybind) {
+                foreach (Keys key in Keyboard.GetState().GetPressedKeys())
                 {
-                    Keys bindedKey = pressedKeys[0];
-                    if (bindedKey != Keys.Escape) 
+                    if (key != Keys.Escape) 
                     {
                         Dictionary<String, Keys> prevBindings = m_keybindingsDAO.loadedKeybindingState.keys;
-                        prevBindings[control] = bindedKey;
+                        prevBindings[control] = key;
                         m_keybindingsDAO.saveKeybind(prevBindings);
                         m_keybindingsDAO.loadKeybinds();
+                        m_isSettingKeybind = false;
                         break;
                     }
-                    break;
+                    else 
+                    {
+                        m_isSettingKeybind = false;
+                        break;
+                    }
                 }
             } 
             m_inputKeyboard.registerCommand(Keys.Down, true, new IInputDevice.CommandDelegate(menuDown));

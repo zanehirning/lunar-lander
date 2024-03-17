@@ -18,14 +18,13 @@ namespace LunarLander.Views.Game
     {
         TerrainGenerator m_terrain;
         List<TerrainGenerator.Point> m_points;
+        List<TerrainGenerator.LandingStrip> m_landingStrips;
         private bool m_gameOver = false;
         private bool m_shipLanded = false;
         private VertexPositionColor[] m_vertsLineStrip;
         private int[] m_indexLineStrip;
         private VertexPositionColor[] m_vertsTriStrip;
         private int[] m_indexTriStrip;
-        private VertexPositionColor[] m_vertsCircleStrip;
-        private int[] m_indexCircleStrip;
         private KeyboardInput m_inputKeyboard;
         private PlayerShip m_ship;
         private bool m_isBackgroundRendered;
@@ -35,6 +34,7 @@ namespace LunarLander.Views.Game
         private SpriteFont m_antaFont;
         private int m_shipSize;
         private TerrainGenerator.Circle m_shipCircle;
+        private int m_level;
 
         private Texture2D m_texShip;
         private Rectangle m_rectShip;
@@ -47,6 +47,12 @@ namespace LunarLander.Views.Game
         private ParticleSystemRenderer m_renderSmoke;
         private ParticleSystem m_particleSystemCrash;
         private ParticleSystemRenderer m_renderCrash;
+
+        private delegate void InternalUpdate(GameTime gameTime);
+        private delegate void InternalRender();
+        private InternalUpdate internalUpdate;
+        private InternalRender internalRender;
+        private int elapsedCountdown = 3000;
 
         private Vector2 m_thrusterPos;
         private Vector2 m_rotationDirection;
@@ -62,53 +68,19 @@ namespace LunarLander.Views.Game
             m_texBackground = contentManager.Load<Texture2D>("Images/background-2");
             m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
 
-            m_ship = new PlayerShip(new Vector2(50 + m_shipSize / 2, 50 + m_shipSize / 2));
+            setLevel(1);
+            
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
-            m_shipCircle = new TerrainGenerator.Circle(new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y), m_shipSize / 2);
             //Particles
-            m_thrusterPos = new Vector2(0, (m_shipSize / 2));
-            m_rotationDirection =  Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
-            m_particleSystemFire = new ParticleSystem(
-                    new Vector2(m_ship.position.X, m_ship.position.Y),
-                    m_rotationDirection,
-                    10, 4,
-                    0.2f, 0.05f,
-                    300, 50);
             m_renderFire = new ParticleSystemRenderer("Particles/fire");
             m_renderFire.LoadContent(contentManager);
-
-            m_particleSystemSmoke = new ParticleSystem(
-                    new Vector2(m_ship.position.X, m_ship.position.Y),
-                    m_rotationDirection,
-                    10, 4,
-                    0.16f, 0.05f,
-                    300, 50);
             m_renderSmoke = new ParticleSystemRenderer("Particles/smoke");
             m_renderSmoke.LoadContent(contentManager);
-
-            m_particleSystemCrash = new ParticleSystem(
-                    new Vector2(m_ship.position.X, m_ship.position.Y),
-                    10, 4,
-                    0.2f, 0.05f,
-                    300, 50);
             m_renderCrash = new ParticleSystemRenderer("Particles/fire");
             m_renderCrash.LoadContent(contentManager);
 
-            m_indexCircleStrip = new int[360];
-            m_vertsCircleStrip = new VertexPositionColor[360];
-
-            m_isBackgroundRendered = false;
-            m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
-            m_speedString = $"Speed: {m_ship.convertToMeters()} m/s";
-            m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
-
-            setupTerrain();
-            //KeyboardInput
-            m_inputKeyboard = new KeyboardInput();
-            m_keybindingsDAO.loadKeybinds();
-            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"], false, new IInputDevice.CommandDelegate(m_ship.rotateRight));
-            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"], false, new IInputDevice.CommandDelegate(m_ship.rotateLeft));
-            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["thrust"], false, new IInputDevice.CommandDelegate(m_ship.applyThrust));
+            internalUpdate = updateCountdown;
+            internalRender = renderCountdown;
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
@@ -121,78 +93,17 @@ namespace LunarLander.Views.Game
 
         public override void render(GameTime gameTime)
         {
-            m_spriteBatch.Begin();
-            if (!m_isBackgroundRendered)
-            {
-                m_spriteBatch.Draw(m_texBackground, m_rectBackground, Color.White);
-                m_isBackgroundRendered = true;
-            }
-            if (!m_gameOver)
-            {
-                drawShip();
-            }
-            drawShipStatus();
-            drawTerrain();
-            m_spriteBatch.End();
-            m_renderSmoke.draw(m_spriteBatch, m_particleSystemSmoke);
-            m_renderFire.draw(m_spriteBatch, m_particleSystemFire);
-            m_renderCrash.draw(m_spriteBatch, m_particleSystemCrash);
+            internalRender();
         }
 
         public override void update(GameTime gameTime)
         {
-            m_shipCircle.center = new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y);
-            for (int i = 0; i < m_points.Count - 1; i++) 
-            {
-                if (m_ship.canLand && m_terrain.isIntersecting(m_points[i], m_points[i + 1], m_shipCircle)) 
-                {
-                    m_shipLanded = true;
-                    m_gameOver = true;
-                }
-                else if (m_terrain.isIntersecting(m_points[i], m_points[i+1], m_shipCircle)) 
-                {
-                    m_particleSystemCrash.shipCrash();
-                    m_gameOver = true;
-                }
-            }
-
-            m_inputKeyboard.Update();
-
-            if (m_ship.isThrusting) 
-            {
-                m_particleSystemFire.shipThrust();
-                m_particleSystemSmoke.shipThrust();
-                Debug.WriteLine("Thrusting");
-            }
-            m_ship.update(gameTime);
-            //circle strip for testing
-            m_indexCircleStrip = new int[360];
-            m_vertsCircleStrip = new VertexPositionColor[360];
-            for (int i = 0; i < 360; i++)
-            {
-                m_indexCircleStrip[i] = i;
-                m_vertsCircleStrip[i].Position = new Vector3(Convert.ToSingle(m_shipCircle.center.x + (m_shipCircle.radius * Math.Cos((float) i/180 * Math.PI))), Convert.ToSingle(m_shipCircle.center.y + (m_shipCircle.radius * Math.Sin((float)i/180 * Math.PI))), 0);
-                m_vertsCircleStrip[i].Color = Color.Red;
-            }
-
-            m_thrusterPos = new Vector2(0, (m_shipSize / 2));
-            m_rotationDirection = Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
-            m_particleSystemFire.center = m_ship.position + m_rotationDirection;
-            m_particleSystemFire.direction = m_rotationDirection;
-            m_particleSystemSmoke.center = m_ship.position + m_rotationDirection;
-            m_particleSystemSmoke.direction = m_rotationDirection;
-            m_particleSystemCrash.center = m_ship.position;
-            m_fuelString = $"Fuel: {Math.Abs(m_ship.fuel).ToString("F2")} s";
-            m_speedString = $"Speed: {m_ship.convertToMeters().ToString("F2")} m/s";
-            m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
-            m_particleSystemFire.update(gameTime);
-            m_particleSystemSmoke.update(gameTime);
-            m_particleSystemCrash.update(gameTime);
+            internalUpdate(gameTime);
         }
 
-        private void setupTerrain()
+        private void setupTerrain(int level)
         {
-            m_terrain = new TerrainGenerator(1, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
+            m_terrain = new TerrainGenerator(level, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
             m_points = m_terrain.getPoints();
             m_points.Sort((point1, point2) => point1.x.CompareTo(point2.x));
 
@@ -244,19 +155,51 @@ namespace LunarLander.Views.Game
             }
         }
 
+        private void setLevel(int level)
+        {
+            m_ship = new PlayerShip(new Vector2(50 + m_shipSize / 2, 50 + m_shipSize / 2));
+            m_shipCircle = new TerrainGenerator.Circle(new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y), m_shipSize / 2);
+            m_thrusterPos = new Vector2(0, (m_shipSize / 2));
+            m_rotationDirection =  Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
+            m_particleSystemFire = new ParticleSystem(
+                    new Vector2(m_ship.position.X, m_ship.position.Y),
+                    m_rotationDirection,
+                    10, 4,
+                    0.2f, 0.05f,
+                    300, 50);
+            m_particleSystemSmoke = new ParticleSystem(
+                    new Vector2(m_ship.position.X, m_ship.position.Y),
+                    m_rotationDirection,
+                    10, 4,
+                    0.16f, 0.05f,
+                    300, 50);
+            m_particleSystemCrash = new ParticleSystem(
+                    new Vector2(m_ship.position.X, m_ship.position.Y),
+                    10, 4,
+                    0.2f, 0.05f,
+                    300, 50);
+            m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
+            m_speedString = $"Speed: {m_ship.convertToMeters()} m/s";
+            m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
+            m_gameOver = false;
+            m_shipLanded = false;
+            m_level = level;
+            setupTerrain(m_level);
+            m_landingStrips = m_terrain.getLandingStrips();
+            //KeyboardInput
+            m_inputKeyboard = new KeyboardInput();
+            m_keybindingsDAO.loadKeybinds();
+            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"], false, new IInputDevice.CommandDelegate(m_ship.rotateRight));
+            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"], false, new IInputDevice.CommandDelegate(m_ship.rotateLeft));
+            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["thrust"], false, new IInputDevice.CommandDelegate(m_ship.applyThrust));
+        }
+
         #region Drawing
         public void drawTerrain()
         {
             foreach (EffectPass pass in m_effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                //Circle drawing for testing
-                m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
-                        PrimitiveType.LineStrip,
-                        m_vertsCircleStrip, 0, m_vertsCircleStrip.Length - 1,
-                        m_indexCircleStrip, 0, m_indexCircleStrip.Length - 1
-                );
-
                 m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
                     PrimitiveType.TriangleStrip,
                     m_vertsTriStrip, 0, m_points.Count + 1,
@@ -331,6 +274,158 @@ namespace LunarLander.Views.Game
             spriteBatch.DrawString(font, text, position + new Vector2(0, PIXEL_OFFSET * scale), outlineColor, 0, Vector2.Zero, scale, SpriteEffects.None, 1f);
 
             spriteBatch.DrawString(font, text, position, frontColor, 0, Vector2.Zero, scale, SpriteEffects.None, 0f);
+        }
+        #endregion
+
+        #region updates/renders
+        private void updateCountdown(GameTime gameTime)
+        {
+            elapsedCountdown -= gameTime.ElapsedGameTime.Milliseconds;
+            if (elapsedCountdown <= 0)
+            {
+                elapsedCountdown = 0;
+                internalUpdate = updateGame;
+                internalRender = renderGame;
+            }
+        }
+
+        private void renderCountdown()
+        {
+            m_spriteBatch.Begin();
+            if (!m_gameOver)
+            {
+                drawShip();
+            }
+            drawTerrain();
+            drawOutlineText(
+                m_spriteBatch,
+                m_antaFont,
+                $"{Math.Ceiling(Convert.ToDecimal(elapsedCountdown / 1000)) + 1}",
+                Color.Black,
+                Color.Red,
+                new Vector2(m_graphics.PreferredBackBufferWidth / 2, 100),
+                1.5f
+            );
+            m_spriteBatch.End();
+        }
+
+        private void updateGame(GameTime gameTime)
+        {
+            m_shipCircle.center = new TerrainGenerator.Point(m_ship.position.X, m_ship.position.Y);
+            for (int i = 0; i < m_points.Count - 1; i++) 
+            {
+                foreach(TerrainGenerator.LandingStrip landingStrip in m_terrain.landingStrips) 
+                {
+                    if (!m_gameOver && m_ship.canLand && landingStrip.isBetweenPoints(m_ship.position.X) && m_terrain.isIntersecting(m_points[i], m_points[i + 1], m_shipCircle)) 
+                    {
+                        m_shipLanded = true;
+                        m_gameOver = true;
+                        elapsedCountdown = 3000;
+                        internalUpdate = updateNextLevelCountdown;
+                        internalRender = renderNextLevelCountdown;
+                    }
+                    else if (!m_gameOver && m_terrain.isIntersecting(m_points[i], m_points[i+1], m_shipCircle)) 
+                    {
+                        m_particleSystemCrash.shipCrash();
+                        m_gameOver = true;
+                        elapsedCountdown = 3000;
+                    }
+                }
+            }
+            
+            if (!m_gameOver) 
+            {
+                m_inputKeyboard.Update();
+                if (m_ship.isThrusting) 
+                {
+                    m_particleSystemFire.shipThrust();
+                    m_particleSystemSmoke.shipThrust();
+                }
+                m_ship.update(gameTime);
+            }
+
+            m_thrusterPos = new Vector2(0, (m_shipSize / 2));
+            m_rotationDirection = Vector2.Transform(m_thrusterPos, Matrix.CreateRotationZ(MathHelper.ToRadians(Convert.ToSingle(m_ship.rotation))));
+            m_particleSystemFire.center = m_ship.position + m_rotationDirection;
+            m_particleSystemFire.direction = m_rotationDirection;
+            m_particleSystemSmoke.center = m_ship.position + m_rotationDirection;
+            m_particleSystemSmoke.direction = m_rotationDirection;
+            m_particleSystemCrash.center = m_ship.position;
+            m_fuelString = $"Fuel: {Math.Abs(m_ship.fuel).ToString("F2")} s";
+            m_speedString = $"Speed: {m_ship.convertToMeters().ToString("F2")} m/s";
+            m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
+            m_particleSystemFire.update(gameTime);
+            m_particleSystemSmoke.update(gameTime);
+            m_particleSystemCrash.update(gameTime);
+        }
+
+        private void renderGame() 
+        {
+            m_spriteBatch.Begin();
+            if (!m_gameOver)
+            {
+                drawShip();
+            }
+            if (m_shipLanded) 
+            {
+                Vector2 stringSize = m_antaFont.MeasureString("You have landed!");
+                drawOutlineText(
+                    m_spriteBatch,
+                    m_antaFont,
+                    "You have landed!",
+                    Color.Black,
+                    Color.Green,
+                    new Vector2(m_graphics.PreferredBackBufferWidth / 2 - (stringSize.X / 2), 100),
+                    1f
+                );
+            }
+            drawShipStatus();
+            drawTerrain();
+            m_spriteBatch.End();
+            m_renderSmoke.draw(m_spriteBatch, m_particleSystemSmoke);
+            m_renderFire.draw(m_spriteBatch, m_particleSystemFire);
+            m_renderCrash.draw(m_spriteBatch, m_particleSystemCrash);
+        }
+
+        private void updateNextLevelCountdown(GameTime gameTime) 
+        {
+            elapsedCountdown -= gameTime.ElapsedGameTime.Milliseconds;
+            if (elapsedCountdown <= 0) 
+            {
+                elapsedCountdown = 0;
+                m_level++;
+                setLevel(m_level);
+                internalUpdate = updateGame;
+                internalRender = renderGame;
+            }
+        }
+
+        private void renderNextLevelCountdown() 
+        {
+            m_spriteBatch.Begin();
+            Vector2 landedStringSize = m_antaFont.MeasureString("You have landed!");
+            drawOutlineText(
+                    m_spriteBatch,
+                    m_antaFont,
+                    "You have landed!",
+                    Color.Black,
+                    Color.Green,
+                    new Vector2(m_graphics.PreferredBackBufferWidth / 2 - (landedStringSize.X / 2), 100),
+                    1f
+            );
+            drawTerrain();
+
+            Vector2 nextLevelStringSize = m_antaFont.MeasureString($"Next level in {Math.Ceiling(Convert.ToDecimal(elapsedCountdown / 1000)) + 1}");
+            drawOutlineText(
+                m_spriteBatch,
+                m_antaFont,
+                $"Next level in {Math.Ceiling(Convert.ToDecimal(elapsedCountdown / 1000)) + 1}",
+                Color.Black,
+                Color.Red,
+                new Vector2(m_graphics.PreferredBackBufferWidth / 2 - nextLevelStringSize.X / 2, landedStringSize.Y + 120),
+                1f
+            );
+            m_spriteBatch.End();
         }
         #endregion
     }

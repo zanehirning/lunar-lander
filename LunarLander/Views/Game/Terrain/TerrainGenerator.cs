@@ -8,14 +8,16 @@ namespace LunarLander.Views.Game.Terrain
     public class TerrainGenerator
     {
         private List<Point> terrainPoints = new List<Point>();
-        private List<LandingStrip> landingStrips = new List<LandingStrip>();
+        public List<LandingStrip> landingStrips = new List<LandingStrip>();
         private int bufferWidth;
         private int bufferHeight;
         private int landingPointWidth; 
+        private int shipWidth;
         public TerrainGenerator(int level, int screenWidth, int screenHeight) 
         {
             bufferWidth = screenWidth;
             bufferHeight = screenHeight;
+            shipWidth = bufferWidth / 45;
             landingPointWidth = bufferWidth / 15;
             RandomNumberGenerator  rand = new RandomNumberGenerator();
             createEndpoints(rand);
@@ -30,7 +32,6 @@ namespace LunarLander.Views.Game.Terrain
             {
                 midpointDisplacement(sortedPoints[4], sortedPoints[5], 10, .8, rand);
             }
-            Debug.WriteLine(terrainPoints.Count);
         }
 
         public void midpointDisplacement(Point left, Point right, int count, double s, RandomNumberGenerator rand)
@@ -43,7 +44,7 @@ namespace LunarLander.Views.Game.Terrain
             r = r > bufferHeight / 5 ? bufferHeight / 5 : r; //put a max displacement
             r = r < -bufferHeight / 5 ? -bufferHeight / 45 : r;
             double pointHeight = midPointY + r;
-            pointHeight = pointHeight > bufferHeight - 40 ? bufferHeight - 40 : pointHeight;
+            pointHeight = pointHeight > bufferHeight - 80 ? bufferHeight - 80 : pointHeight;
             Point newPoint = new Point(midPointX, pointHeight);
             this.terrainPoints.Add(newPoint);
 
@@ -53,9 +54,9 @@ namespace LunarLander.Views.Game.Terrain
 
         public void createEndpoints(RandomNumberGenerator rand)
         {
-            int leftEndY = bufferHeight - rand.Next(bufferHeight / 2) + 20;
+            int leftEndY = bufferHeight - rand.Next(bufferHeight / 2) + 80;
             Point leftEndPoint = new Point(0, leftEndY);
-            int rightEndY = bufferHeight - rand.Next(bufferHeight / 2) + 20;
+            int rightEndY = bufferHeight - rand.Next(bufferHeight / 2) + 80;
             Point rightEndPoint = new Point(bufferWidth, rightEndY);
             terrainPoints.Add(leftEndPoint);
             terrainPoints.Add(rightEndPoint);
@@ -70,36 +71,36 @@ namespace LunarLander.Views.Game.Terrain
                 // Place anywhere in the first half
                 int firstLeftX = rand.Next(bufferWidth / 2 - buffer - landingPointWidth) + buffer;
                 int firstRightX = firstLeftX + landingPointWidth;
-                int firstY = bufferHeight - rand.Next(bufferHeight / 2) + 20;
-                firstY = firstY > bufferHeight - 40 ? bufferHeight - 40 : firstY;
+                int firstY = bufferHeight - rand.Next(bufferHeight / 2) + 80;
+                firstY = firstY > bufferHeight - 80 ? bufferHeight - 80 : firstY;
                 Point firstLeftPoint = new Point(firstLeftX, firstY);
                 Point firstRightPoint = new Point(firstRightX, firstY);
                 terrainPoints.Add(firstLeftPoint);
                 terrainPoints.Add(firstRightPoint);
-                landingStrips.Add(new LandingStrip(firstLeftPoint, firstRightPoint));
+                landingStrips.Add(new LandingStrip(firstLeftPoint, firstRightPoint, shipWidth));
 
                 // Second landing strip. Place anywhere in the second half, plus small buffer
                 int secondLeftX = rand.Next((bufferWidth / 2) - (2 * buffer) - landingPointWidth) + buffer + (bufferWidth / 2);
                 int secondRightX = secondLeftX+ landingPointWidth;
-                int secondY = bufferHeight - rand.Next(bufferHeight / 2) + 20;
-                secondY = secondY > bufferHeight - 40 ? bufferHeight - 40 : secondY;
+                int secondY = bufferHeight - rand.Next(bufferHeight / 2) + 80;
+                secondY = secondY > bufferHeight - 80 ? bufferHeight - 80 : secondY;
                 Point secondLeftPoint = new Point(secondLeftX, secondY);
                 Point secondRightPoint = new Point(secondRightX, secondY);
                 terrainPoints.Add(secondLeftPoint);
                 terrainPoints.Add(secondRightPoint);
-                landingStrips.Add(new LandingStrip(secondLeftPoint, secondRightPoint));
+                landingStrips.Add(new LandingStrip(secondLeftPoint, secondRightPoint, shipWidth));
             }
             else
             {
                 int leftX = rand.Next(bufferWidth - (2 * buffer) - landingPointWidth) + buffer;
                 int rightX = leftX + landingPointWidth;
-                int landingY = bufferHeight - rand.Next(bufferHeight / 2) + 20;
-                landingY = landingY > bufferHeight - 40 ? bufferHeight - 40 : landingY;
+                int landingY = bufferHeight - rand.Next(bufferHeight / 2) + 80;
+                landingY = landingY > bufferHeight - 80 ? bufferHeight - 80 : landingY;
                 Point leftPoint = new Point(leftX, landingY);
                 Point rightPoint = new Point(rightX, landingY);
                 terrainPoints.Add(leftPoint);
                 terrainPoints.Add(rightPoint);
-                landingStrips.Add(new LandingStrip(leftPoint, rightPoint));
+                landingStrips.Add(new LandingStrip(leftPoint, rightPoint, shipWidth));
             }
         }
 
@@ -133,20 +134,27 @@ namespace LunarLander.Views.Game.Terrain
             return this.terrainPoints;
         }
 
+        public List<LandingStrip> getLandingStrips()
+        {
+            return this.landingStrips;
+        }
+
         #region Structs
         public struct LandingStrip
         {
             public Point leftPoint { get; set; }
             public Point rightPoint { get; set; }
-            public LandingStrip(Point left, Point right)
+            public int shipWidth { get; set; }
+            public LandingStrip(Point left, Point right, int shipWidth)
             {
                 this.leftPoint = left;
                 this.rightPoint = right;
+                this.shipWidth = shipWidth;
             }
 
-            public bool isBetweenPoints(Point point) 
+            public bool isBetweenPoints(float x) 
             {
-                return leftPoint.x <= point.x && rightPoint.x >= point.x;
+                return leftPoint.x + (shipWidth / 2) <= x && rightPoint.x - (shipWidth / 2) >= x;
             }
         }
 
