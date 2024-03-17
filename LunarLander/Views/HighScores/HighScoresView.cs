@@ -80,11 +80,11 @@ namespace LunarLander.Views.HighScores
                 }
                 else
                 {
-                    Vector2 stringSize = m_menuFont.MeasureString("No Highscores Yet");
+                    Vector2 stringSize = m_menuFont.MeasureString("Could not load high scores");
                     drawOutlineText(
                             m_spriteBatch, 
                             m_menuFont, 
-                            "No Highscores Yet",
+                            "Could not load high scores",
                             Color.Black,
                             Color.White,
                             new Vector2(m_graphics.PreferredBackBufferWidth / 2 - (stringSize.X / 2), m_graphics.PreferredBackBufferHeight / 2 + headerStringSize.Y),

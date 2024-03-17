@@ -57,7 +57,14 @@ namespace LunarLander.State
 
             m_highScoresDAO = new HighScoresDAO();
             m_highScoresDAO.loadHighScores();
+            if (m_highScoresDAO.loadedHighScoresState == null) 
+            {
+                List<int> highScores = new List<int>();
+                m_highScoresDAO.saveHighScores(highScores);
+            }
+            m_highScoresDAO.loadHighScores();
         }
+
         public abstract void loadContent(ContentManager contentManager);
         public abstract GameStateEnum processInput(GameTime gameTime);
         public abstract void render(GameTime gameTime);

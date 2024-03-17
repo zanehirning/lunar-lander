@@ -184,6 +184,10 @@ namespace LunarLander.Views.Game
             m_shipLanded = false;
             m_level = level;
             setupTerrain(m_level);
+            if (m_level == 1)
+            {
+                m_currentScore = 0;
+            }
             m_landingStrips = m_terrain.getLandingStrips();
             //KeyboardInput
             m_inputKeyboard = new KeyboardInput();
@@ -193,6 +197,19 @@ namespace LunarLander.Views.Game
             m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["thrust"], false, new IInputDevice.CommandDelegate(m_ship.applyThrust));
             internalUpdate = updateCountdown;
             internalRender = renderCountdown;
+        }
+
+        private void setHighScores()
+        {
+            List<int> prevHighScores = m_highScoresDAO.loadedHighScoresState.Scores;
+            prevHighScores.Add(m_currentScore);
+            prevHighScores.Sort();
+            prevHighScores.Reverse();
+            if (prevHighScores.Count > 5) 
+            {
+                prevHighScores.RemoveAt(prevHighScores.Count - 1);
+            }
+            m_highScoresDAO.saveHighScores(prevHighScores);
         }
 
         #region Drawing
@@ -330,6 +347,7 @@ namespace LunarLander.Views.Game
                         }
                         else 
                         {
+                            setHighScores();
                             internalUpdate = updateGameOver;
                             internalRender = renderGameOver;
                         }
@@ -339,6 +357,7 @@ namespace LunarLander.Views.Game
                         m_particleSystemCrash.shipCrash();
                         m_gameOver = true;
                         elapsedCountdown = 3000;
+                        setHighScores();
                         internalUpdate = updateGameOver;
                         internalRender = renderGameOver;
                     }
@@ -374,10 +393,7 @@ namespace LunarLander.Views.Game
         private void renderGame() 
         {
             m_spriteBatch.Begin();
-            if (!m_gameOver)
-            {
-                drawShip();
-            }
+            drawShip();
             if (m_shipLanded) 
             {
                 Vector2 stringSize = m_antaFont.MeasureString("You have landed!");
@@ -416,6 +432,10 @@ namespace LunarLander.Views.Game
         {
             m_spriteBatch.Begin();
             Vector2 landedStringSize = m_antaFont.MeasureString("You have landed!");
+            if (m_shipLanded)
+            {
+                drawShip();
+            }
             drawOutlineText(
                     m_spriteBatch,
                     m_antaFont,
@@ -449,6 +469,10 @@ namespace LunarLander.Views.Game
         {
             m_spriteBatch.Begin();
             Vector2 stringSize = m_antaFont.MeasureString("Game Over");
+            if (m_shipLanded)
+            {
+                drawShip();
+            }
             drawOutlineText(
                 m_spriteBatch,
                 m_antaFont,
