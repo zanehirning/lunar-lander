@@ -12,6 +12,9 @@ namespace LunarLander
         private GraphicsDeviceManager m_graphics;
         private IGameState m_currentState;
         private Dictionary<GameStateEnum, IGameState> m_states;
+        private Texture2D m_texBackground;
+        private Rectangle m_rectBackground;
+        private SpriteBatch m_spriteBatch;
 
         public LunarLander()
         {
@@ -52,6 +55,8 @@ namespace LunarLander
             {
                 item.Value.loadContent(this.Content);
             }
+            m_texBackground = this.Content.Load<Texture2D>("Images/background-2");
+            m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
         }
 
         protected override void Update(GameTime gameTime)
@@ -76,6 +81,13 @@ namespace LunarLander
         {
 
             GraphicsDevice.Clear(Color.Black);
+
+            // Draw the background
+            m_spriteBatch = new SpriteBatch(m_graphics.GraphicsDevice);
+            m_spriteBatch.Begin();
+            m_spriteBatch.Draw(m_texBackground, m_rectBackground, Color.White);
+            m_spriteBatch.End();
+
 
             m_currentState.render(gameTime);
 

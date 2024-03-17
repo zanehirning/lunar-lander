@@ -29,7 +29,6 @@ namespace LunarLander.Views.Game
         private int[] m_indexTriStrip;
         private KeyboardInput m_inputKeyboard;
         private PlayerShip m_ship;
-        private bool m_isBackgroundRendered;
         private String m_fuelString;
         private String m_speedString;
         private String m_angleString;
@@ -67,6 +66,7 @@ namespace LunarLander.Views.Game
 
         private Vector2 m_thrusterPos;
         private Vector2 m_rotationDirection;
+        private bool m_hasSetKeybinds = false;
 
         public GameView()
         {
@@ -85,8 +85,9 @@ namespace LunarLander.Views.Game
             m_crashSoundInstance = m_crashSound.CreateInstance();
             m_landingSoundInstance = m_landingSound.CreateInstance();
             m_thrustersSoundInstance.Volume = 0f;
-            m_crashSoundInstance.Volume = 0.5f;
+            m_crashSoundInstance.Volume = 0.1f;
             m_landingSoundInstance.Volume = 0.5f;
+            m_inputKeyboard = new KeyboardInput();
 
             setLevel(1);
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
@@ -103,6 +104,8 @@ namespace LunarLander.Views.Game
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) {
                 setLevel(1);
+                elapsedCountdown = 3000;
+                m_hasSetKeybinds = false;
                 return GameStateEnum.MainMenu;
             }
             return GameStateEnum.Game;
@@ -115,7 +118,7 @@ namespace LunarLander.Views.Game
 
         public override void update(GameTime gameTime)
         {
-            m_keybindingsDAO.loadKeybinds();
+            m_highScoresDAO.loadHighScores();
             m_keybindingsDAO.loadKeybinds();
             internalUpdate(gameTime);
         }
@@ -209,13 +212,12 @@ namespace LunarLander.Views.Game
             {
                 m_currentScore = 0;
             }
-            m_landingStrips = m_terrain.getLandingStrips();
-            //KeyboardInput
-            m_inputKeyboard = new KeyboardInput();
             m_keybindingsDAO.loadKeybinds();
+            //KeyboardInput
             m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"], false, new IInputDevice.CommandDelegate(m_ship.rotateRight));
             m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"], false, new IInputDevice.CommandDelegate(m_ship.rotateLeft));
             m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["thrust"], false, new IInputDevice.CommandDelegate(m_ship.applyThrust));
+            m_landingStrips = m_terrain.getLandingStrips();
             internalUpdate = updateCountdown;
             internalRender = renderCountdown;
         }
@@ -319,6 +321,11 @@ namespace LunarLander.Views.Game
         #region updates/renders
         private void updateCountdown(GameTime gameTime)
         {
+            m_keybindingsDAO.loadKeybinds();
+            //KeyboardInput
+            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"], false, new IInputDevice.CommandDelegate(m_ship.rotateRight));
+            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"], false, new IInputDevice.CommandDelegate(m_ship.rotateLeft));
+            m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["thrust"], false, new IInputDevice.CommandDelegate(m_ship.applyThrust));
             elapsedCountdown -= gameTime.ElapsedGameTime.Milliseconds;
             if (elapsedCountdown <= 0)
             {

@@ -109,7 +109,7 @@ namespace LunarLander.Views.Game.Terrain
             Point v1 = new Point(pt2.x - pt1.x, pt2.y - pt1.y);
             Point v2 = new Point(pt1.x - circle.center.x, pt1.y - circle.center.y);
             double b = -2 * (v1.x * v2.x + v1.y * v2.y);
-            double c = 2 * (v1.x * v1.x + v1.y * v1.y); // maybe wrong?
+            double c = 2 * (v1.x * v1.x + v1.y * v1.y); 
             double d = Math.Sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
             if (Double.IsNaN(d))
             {

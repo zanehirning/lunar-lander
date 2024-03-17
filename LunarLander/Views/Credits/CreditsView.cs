@@ -27,7 +27,7 @@ namespace LunarLander.Views.Credits
 
         public override void render(GameTime gameTime)
         {
-
+            m_graphics.GraphicsDevice.Clear(Color.Black);
             m_spriteBatch.Begin();
             float position = drawMenuItem(m_menuFont, "Credits", m_graphics.PreferredBackBufferHeight/2, new Color(1, 59, 89));
             drawMenuItem(m_menuFont, "Created By: Zane Hirning", position, new Color(1, 59, 89));

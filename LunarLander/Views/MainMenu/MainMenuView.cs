@@ -65,6 +65,8 @@ namespace LunarLander.Views.MainMenu
 
         public override void update(GameTime gameTime)
         {
+            m_highScoresDAO.loadHighScores();
+            m_keybindingsDAO.loadKeybinds();
         }
 
         #region Input
@@ -87,6 +89,7 @@ namespace LunarLander.Views.MainMenu
         #region Drawing
         public override void render(GameTime gameTime)
         {
+            m_graphics.GraphicsDevice.Clear(Color.Black);
             m_spriteBatch.Begin();
             drawPlanet();
             float bottom = drawMenuItem(m_currentSelection == MenuStateEnum.StartGame ? m_menuSelectFont : m_menuFont, "Start Game", m_graphics.PreferredBackBufferHeight / 2, m_currentSelection == MenuStateEnum.StartGame ? new Color(1, 59, 89) : Color.White);

@@ -34,6 +34,7 @@ namespace LunarLander.Views.HighScores
 
         public override void render(GameTime gameTime)
         {
+            m_graphics.GraphicsDevice.Clear(Color.Black);
             m_spriteBatch.Begin();
             drawPlanet();
             Vector2 headerStringSize = m_menuFont.MeasureString("High Scores");
