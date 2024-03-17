@@ -11,6 +11,8 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using LunarLander.Views.Game.Particles;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace LunarLander.Views.Game
 {
@@ -37,6 +39,13 @@ namespace LunarLander.Views.Game
         private TerrainGenerator.Circle m_shipCircle;
         private int m_level;
         private int m_currentScore;
+
+        private SoundEffect m_thrustersSound;
+        private SoundEffect m_crashSound;
+        private SoundEffect m_landingSound;
+        private SoundEffectInstance m_thrustersSoundInstance;
+        private SoundEffectInstance m_crashSoundInstance;
+        private SoundEffectInstance m_landingSoundInstance;
 
         private Texture2D m_texShip;
         private Rectangle m_rectShip;
@@ -69,6 +78,16 @@ namespace LunarLander.Views.Game
             m_rectShip = new Rectangle(50, 50, m_shipSize, m_shipSize);
             m_texBackground = contentManager.Load<Texture2D>("Images/background-2");
             m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
+            m_thrustersSound = contentManager.Load<SoundEffect>("Audio/thrusters_sound");
+            m_crashSound = contentManager.Load<SoundEffect>("Audio/explosion_sound");
+            m_landingSound = contentManager.Load<SoundEffect>("Audio/success_sound");
+            m_thrustersSoundInstance = m_thrustersSound.CreateInstance();
+            m_crashSoundInstance = m_crashSound.CreateInstance();
+            m_landingSoundInstance = m_landingSound.CreateInstance();
+            m_thrustersSoundInstance.Volume = 0f;
+            m_crashSoundInstance.Volume = 0.5f;
+            m_landingSoundInstance.Volume = 0.5f;
+
             setLevel(1);
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
             //Particles
@@ -96,6 +115,8 @@ namespace LunarLander.Views.Game
 
         public override void update(GameTime gameTime)
         {
+            m_keybindingsDAO.loadKeybinds();
+            m_keybindingsDAO.loadKeybinds();
             internalUpdate(gameTime);
         }
 
@@ -339,6 +360,8 @@ namespace LunarLander.Views.Game
                         m_shipLanded = true;
                         m_gameOver = true;
                         m_currentScore += Convert.ToInt32((50 * m_ship.fuel) + 200);
+                        m_landingSoundInstance.Play();
+                        m_thrustersSoundInstance.Stop();
                         elapsedCountdown = 3000;
                         if (m_level == 1) 
                         {
@@ -355,9 +378,11 @@ namespace LunarLander.Views.Game
                     else if (!m_gameOver && m_terrain.isIntersecting(m_points[i], m_points[i+1], m_shipCircle)) 
                     {
                         m_particleSystemCrash.shipCrash();
+                        m_crashSoundInstance.Play();
                         m_gameOver = true;
                         elapsedCountdown = 3000;
                         setHighScores();
+                        m_thrustersSoundInstance.Stop();
                         internalUpdate = updateGameOver;
                         internalRender = renderGameOver;
                     }
@@ -369,8 +394,24 @@ namespace LunarLander.Views.Game
                 m_inputKeyboard.Update();
                 if (m_ship.isThrusting) 
                 {
+                    if (m_thrustersSoundInstance.Volume < 0.5f) 
+                    {
+                        m_thrustersSoundInstance.Volume += 0.01f;
+                    } 
                     m_particleSystemFire.shipThrust();
                     m_particleSystemSmoke.shipThrust();
+                    m_thrustersSoundInstance.Play();
+                }
+                else
+                {
+                    if (m_thrustersSoundInstance.Volume > 0.01f) 
+                    {
+                        m_thrustersSoundInstance.Volume -= 0.01f;
+                    }
+                    else 
+                    {
+                        m_thrustersSoundInstance.Stop();
+                    }
                 }
                 m_ship.update(gameTime);
             }

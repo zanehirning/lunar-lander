@@ -134,3 +134,23 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Images/background-2.jpg
+
+# audio
+#begin Audio/thrusters_sound.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/thrusters_sound.mp3
+
+#begin Audio/explosion_sound.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/explosion_sound.mp3
+
+#begin Audio/success_sound.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/success_sound.mp3
+

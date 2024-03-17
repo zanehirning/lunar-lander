@@ -15,8 +15,14 @@
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Particles/smoke.png</File>
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Images/ship-2.png</File>
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Images/background-2.jpg</File>
+    <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Audio/thrusters_sound.mp3</File>
+    <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Audio/explosion_sound.mp3</File>
+    <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Audio/success_sound.mp3</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

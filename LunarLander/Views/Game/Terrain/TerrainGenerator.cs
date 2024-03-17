@@ -41,8 +41,8 @@ namespace LunarLander.Views.Game.Terrain
             double midPointX = (left.x + right.x) / 2;
             double midPointY = (left.y + right.y) / 2;
             double r = s * (rand.nextGaussian(0, 1) * Math.Abs(left.x - right.x));
-            r = r > bufferHeight / 5 ? bufferHeight / 5 : r; //put a max displacement
-            r = r < -bufferHeight / 5 ? -bufferHeight / 45 : r;
+            r = r > bufferHeight / 4 ? bufferHeight / 4 : r; //put a max displacement
+            r = r < -bufferHeight / 4 ? -bufferHeight / 45 : r;
             double pointHeight = midPointY + r;
             pointHeight = pointHeight > bufferHeight - 80 ? bufferHeight - 80 : pointHeight;
             Point newPoint = new Point(midPointX, pointHeight);
@@ -54,9 +54,9 @@ namespace LunarLander.Views.Game.Terrain
 
         public void createEndpoints(RandomNumberGenerator rand)
         {
-            int leftEndY = bufferHeight - rand.Next(bufferHeight / 2) + 80;
+            int leftEndY = Convert.ToInt32(bufferHeight - rand.nextRange(bufferHeight / 3, bufferHeight / 2) + 80);
             Point leftEndPoint = new Point(0, leftEndY);
-            int rightEndY = bufferHeight - rand.Next(bufferHeight / 2) + 80;
+            int rightEndY = Convert.ToInt32(bufferHeight - rand.nextRange(bufferHeight / 3, bufferHeight / 2) + 80);
             Point rightEndPoint = new Point(bufferWidth, rightEndY);
             terrainPoints.Add(leftEndPoint);
             terrainPoints.Add(rightEndPoint);

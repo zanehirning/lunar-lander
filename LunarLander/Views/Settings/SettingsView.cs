@@ -23,6 +23,12 @@ namespace LunarLander.Views.Settings
         private SettingsStateEnum m_currentSelection = SettingsStateEnum.Thrust;
         private KeyboardInput m_inputKeyboard;
         private bool m_isSettingKeybind = false;
+        private bool m_isSettingThrust = false;
+        private bool m_isSettingRotateLeft = false;
+        private bool m_isSettingRotateRight = false;
+        private string m_thrustKeybindText = " ";
+        private string m_rotateLeftKeybindText = " ";
+        private string m_rotateRightKeybindText = " ";
 
         public override void loadContent(ContentManager contentManager)
         {
@@ -33,6 +39,10 @@ namespace LunarLander.Views.Settings
             m_inputKeyboard = new KeyboardInput();
             m_inputKeyboard.registerCommand(Keys.Down, true, new IInputDevice.CommandDelegate(menuDown));
             m_inputKeyboard.registerCommand(Keys.Up, true, new IInputDevice.CommandDelegate(menuUp));
+
+            m_thrustKeybindText = m_keybindingsDAO.loadedKeybindingState.keys["thrust"].ToString();
+            m_rotateLeftKeybindText = m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"].ToString();
+            m_rotateRightKeybindText = m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"].ToString();
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
@@ -49,19 +59,25 @@ namespace LunarLander.Views.Settings
                     case SettingsStateEnum.Thrust: 
                         {
                             m_isSettingKeybind = true;
+                            m_thrustKeybindText = " ";
                             setKeybinding("thrust");
+                            m_thrustKeybindText = m_keybindingsDAO.loadedKeybindingState.keys["thrust"].ToString();
                             return GameStateEnum.Settings;
                         };
                     case SettingsStateEnum.RotateLeft: 
                         {
                             m_isSettingKeybind = true;
+                            m_rotateLeftKeybindText = " ";
                             setKeybinding("RotateLeft");
+                            m_rotateLeftKeybindText = m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"].ToString();
                             return GameStateEnum.Settings;
                         };
                     case SettingsStateEnum.RotateRight: 
                         {
                             m_isSettingKeybind = true;
+                            m_rotateRightKeybindText = " ";
                             setKeybinding("RotateRight");
+                            m_rotateRightKeybindText = m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"].ToString();
                             return GameStateEnum.Settings;
                         };
                 }
@@ -75,15 +91,19 @@ namespace LunarLander.Views.Settings
             drawPlanet();
             if (m_keybindingsDAO.loadedKeybindingState != null) 
             {
-                float bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.Thrust ? m_menuSelectFont : m_menuFont, $"Thrust: {m_keybindingsDAO.loadedKeybindingState.keys["thrust"]}", m_graphics.PreferredBackBufferHeight / 2, m_currentSelection == SettingsStateEnum.Thrust ? new Color(1, 59, 89) : Color.White);
-                bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.RotateLeft ? m_menuSelectFont : m_menuFont, $"Rotate Left: {m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"]}", bottom, m_currentSelection == SettingsStateEnum.RotateLeft ? new Color(1, 59, 89) : Color.White);
-                bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.RotateRight ? m_menuSelectFont : m_menuFont, $"Rotate Right: {m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"]}", bottom, m_currentSelection == SettingsStateEnum.RotateRight ? new Color(1, 59, 89) : Color.White);
+                float bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.Thrust ? m_menuSelectFont : m_menuFont, $"Thrust: {m_thrustKeybindText}", m_graphics.PreferredBackBufferHeight / 2, m_currentSelection == SettingsStateEnum.Thrust ? new Color(1, 59, 89) : Color.White);
+                bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.RotateLeft ? m_menuSelectFont : m_menuFont, $"Rotate Left: {m_rotateLeftKeybindText}", bottom, m_currentSelection == SettingsStateEnum.RotateLeft ? new Color(1, 59, 89) : Color.White);
+                bottom = drawMenuItem(m_currentSelection == SettingsStateEnum.RotateRight ? m_menuSelectFont : m_menuFont, $"Rotate Right: {m_rotateRightKeybindText}", bottom, m_currentSelection == SettingsStateEnum.RotateRight ? new Color(1, 59, 89) : Color.White);
             }
             m_spriteBatch.End();
         }
 
         public override void update(GameTime gameTime)
         {
+            m_keybindingsDAO.loadKeybinds();
+            m_thrustKeybindText = m_keybindingsDAO.loadedKeybindingState.keys["thrust"].ToString();
+            m_rotateLeftKeybindText = m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"].ToString();
+            m_rotateRightKeybindText = m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"].ToString();
         }
 
         private void setKeybinding(String control) 
@@ -93,7 +113,7 @@ namespace LunarLander.Views.Settings
             if (m_isSettingKeybind) {
                 foreach (Keys key in Keyboard.GetState().GetPressedKeys())
                 {
-                    if (key != Keys.Escape) 
+                    if (key != Keys.Escape && key != Keys.Enter) 
                     {
                         Dictionary<String, Keys> prevBindings = m_keybindingsDAO.loadedKeybindingState.keys;
                         prevBindings[control] = key;

@@ -96,6 +96,7 @@ namespace LunarLander.Views.HighScores
 
         public override void update(GameTime gameTime)
         {
+            m_highScoresDAO.loadHighScores();
         }
 
         private void drawPlanet()

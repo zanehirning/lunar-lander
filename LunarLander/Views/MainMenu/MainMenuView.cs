@@ -40,10 +40,22 @@ namespace LunarLander.Views.MainMenu
             {
                 switch (m_currentSelection)
                 {
-                    case MenuStateEnum.StartGame: return GameStateEnum.Game;
+                    case MenuStateEnum.StartGame:
+                        {
+                            m_keybindingsDAO.loadKeybinds();
+                            m_highScoresDAO.loadHighScores();
+                            return GameStateEnum.Game;
+                        }
                     case MenuStateEnum.Credits: return GameStateEnum.Credits;
-                    case MenuStateEnum.HighScores: return GameStateEnum.HighScores;
-                    case MenuStateEnum.Settings: return GameStateEnum.Settings;
+                    case MenuStateEnum.HighScores:
+                        {
+                            return GameStateEnum.HighScores;
+                        }
+                    case MenuStateEnum.Settings: 
+                        {
+                            m_keybindingsDAO.loadKeybinds();
+                            return GameStateEnum.Settings;
+                        }
                     case MenuStateEnum.Exit: return GameStateEnum.Exit;
                     default: return GameStateEnum.MainMenu;
                 }
