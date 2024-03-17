@@ -20,6 +20,7 @@ namespace LunarLander.State
         protected SpriteBatch m_spriteBatch;
         protected BasicEffect m_effect;
         protected KeybindingsDAO m_keybindingsDAO;
+        protected HighScoresDAO m_highScoresDAO;
 
         public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics)
         {
@@ -53,7 +54,9 @@ namespace LunarLander.State
                 m_keybindingsDAO.saveKeybind(keybindings);
             }
             m_keybindingsDAO.loadKeybinds();
-            Debug.WriteLine("Loaded");
+
+            m_highScoresDAO = new HighScoresDAO();
+            m_highScoresDAO.loadHighScores();
         }
         public abstract void loadContent(ContentManager contentManager);
         public abstract GameStateEnum processInput(GameTime gameTime);

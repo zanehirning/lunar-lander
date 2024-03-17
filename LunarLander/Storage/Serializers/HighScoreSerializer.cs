@@ -10,23 +10,13 @@ namespace LunarLander.Storage
         public HighScores() {
         }
 
-        public HighScores(uint score)
+        public HighScores(List<int> scores)
         {
-            this.Score = score;
-            this.TimeStamp = DateTime.Now;
-
-            keys.Add(1, "one");
-            keys.Add(2, "two");
+            this.Scores = scores;
         }
 
         [DataMember()]
-        public string Name { get; set; }
-        [DataMember()]
-        public uint Score { get; set; }
-        [DataMember()]
-        public DateTime TimeStamp { get; set; }
-        [DataMember()]
-        public Dictionary<int, String> keys = new Dictionary<int, string>();
+        public List<int> Scores { get; set; }
     }
 }
 

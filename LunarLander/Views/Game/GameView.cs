@@ -31,10 +31,12 @@ namespace LunarLander.Views.Game
         private String m_fuelString;
         private String m_speedString;
         private String m_angleString;
+        private String m_scoreString;
         private SpriteFont m_antaFont;
         private int m_shipSize;
         private TerrainGenerator.Circle m_shipCircle;
         private int m_level;
+        private int m_currentScore;
 
         private Texture2D m_texShip;
         private Rectangle m_rectShip;
@@ -67,9 +69,7 @@ namespace LunarLander.Views.Game
             m_rectShip = new Rectangle(50, 50, m_shipSize, m_shipSize);
             m_texBackground = contentManager.Load<Texture2D>("Images/background-2");
             m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
-
             setLevel(1);
-            
             m_antaFont = contentManager.Load<SpriteFont>("Fonts/anta-regular");
             //Particles
             m_renderFire = new ParticleSystemRenderer("Particles/fire");
@@ -78,15 +78,13 @@ namespace LunarLander.Views.Game
             m_renderSmoke.LoadContent(contentManager);
             m_renderCrash = new ParticleSystemRenderer("Particles/fire");
             m_renderCrash.LoadContent(contentManager);
-
-            internalUpdate = updateCountdown;
-            internalRender = renderCountdown;
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) {
-                    return GameStateEnum.MainMenu;
+                setLevel(1);
+                return GameStateEnum.MainMenu;
             }
             return GameStateEnum.Game;
         }
@@ -181,6 +179,7 @@ namespace LunarLander.Views.Game
             m_fuelString = $"Fuel: {m_ship.fuel.ToString("F2")} s";
             m_speedString = $"Speed: {m_ship.convertToMeters()} m/s";
             m_angleString = $"Angle: {m_ship.rotation.ToString("F1")}";
+            m_scoreString = $"Score: {m_currentScore}";
             m_gameOver = false;
             m_shipLanded = false;
             m_level = level;
@@ -192,6 +191,8 @@ namespace LunarLander.Views.Game
             m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateRight"], false, new IInputDevice.CommandDelegate(m_ship.rotateRight));
             m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["RotateLeft"], false, new IInputDevice.CommandDelegate(m_ship.rotateLeft));
             m_inputKeyboard.registerCommand(m_keybindingsDAO.loadedKeybindingState.keys["thrust"], false, new IInputDevice.CommandDelegate(m_ship.applyThrust));
+            internalUpdate = updateCountdown;
+            internalRender = renderCountdown;
         }
 
         #region Drawing
@@ -320,9 +321,18 @@ namespace LunarLander.Views.Game
                     {
                         m_shipLanded = true;
                         m_gameOver = true;
+                        m_currentScore += Convert.ToInt32((50 * m_ship.fuel) + 200);
                         elapsedCountdown = 3000;
-                        internalUpdate = updateNextLevelCountdown;
-                        internalRender = renderNextLevelCountdown;
+                        if (m_level == 1) 
+                        {
+                            internalUpdate = updateNextLevelCountdown;
+                            internalRender = renderNextLevelCountdown;
+                        }
+                        else 
+                        {
+                            internalUpdate = updateGameOver;
+                            internalRender = renderGameOver;
+                        }
                     }
                     else if (!m_gameOver && m_terrain.isIntersecting(m_points[i], m_points[i+1], m_shipCircle)) 
                     {
@@ -425,6 +435,49 @@ namespace LunarLander.Views.Game
                 new Vector2(m_graphics.PreferredBackBufferWidth / 2 - nextLevelStringSize.X / 2, landedStringSize.Y + 120),
                 1f
             );
+            m_spriteBatch.End();
+        }
+
+        private void updateGameOver(GameTime gameTime) 
+        {
+
+        }
+
+        private void renderGameOver() 
+        {
+            m_spriteBatch.Begin();
+            Vector2 stringSize = m_antaFont.MeasureString("Game Over");
+            drawOutlineText(
+                m_spriteBatch,
+                m_antaFont,
+                "Game Over",
+                Color.Black,
+                Color.Green,
+                new Vector2(m_graphics.PreferredBackBufferWidth / 2 - (stringSize.X / 2), 100),
+                1f
+            );
+            stringSize = m_antaFont.MeasureString($"Score: {m_currentScore}");
+            drawOutlineText(
+                m_spriteBatch,
+                m_antaFont,
+                $"Score: {m_currentScore}",
+                Color.Black,
+                Color.Green,
+                new Vector2(m_graphics.PreferredBackBufferWidth / 2 - (stringSize.X / 2), 150),
+                1f
+            );
+            // notion the user to press escape to go back to main MainMenu
+            stringSize = m_antaFont.MeasureString("Press escape to go back to main menu");
+            drawOutlineText(
+                m_spriteBatch,
+                m_antaFont,
+                "Press escape to go back to main menu",
+                Color.Black,
+                Color.Red,
+                new Vector2(m_graphics.PreferredBackBufferWidth / 2 - (stringSize.X / 2), 200),
+                1f
+            );
+            drawTerrain();
             m_spriteBatch.End();
         }
         #endregion

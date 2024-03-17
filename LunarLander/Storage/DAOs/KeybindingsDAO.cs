@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Runtime.Serialization.Json;
+using System.Diagnostics;
 
 namespace LunarLander.Storage
 {
@@ -31,8 +32,8 @@ namespace LunarLander.Storage
                     // Create something to save
                     Keybindings keybindingState = new Keybindings(keybindings);
 
-                    // Yes, I know the result is not being saved, I dont' need it
-                    finalizeSaveAsync(keybindingState);
+                    var result = finalizeSaveAsync(keybindingState);
+                    result.Wait();
                 }
             }
         }
@@ -54,8 +55,9 @@ namespace LunarLander.Storage
                             }
                         }
                     }
-                    catch (IsolatedStorageException)
+                    catch (IsolatedStorageException e)
                     {
+                        Debug.WriteLine(e.ToString());
                         Console.Write("Something went wrong, please try again");
                     }
                 }

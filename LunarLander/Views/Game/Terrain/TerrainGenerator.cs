@@ -26,11 +26,11 @@ namespace LunarLander.Views.Game.Terrain
             terrainPoints.Sort((point1, point2) => point1.x.CompareTo(point2.x));
             List<Point> sortedPoints = terrainPoints;
 
-            midpointDisplacement(sortedPoints[0], sortedPoints[1], 10, .8,  rand); //left end, start landing
-            midpointDisplacement(sortedPoints[2], sortedPoints[3], 10, .8, rand); // end landing, start landing 2 or right end
+            midpointDisplacement(sortedPoints[0], sortedPoints[1], 11, .8,  rand); //left end, start landing
+            midpointDisplacement(sortedPoints[2], sortedPoints[3], 11, .8, rand); // end landing, start landing 2 or right end
             if (level == 1) 
             {
-                midpointDisplacement(sortedPoints[4], sortedPoints[5], 10, .8, rand);
+                midpointDisplacement(sortedPoints[4], sortedPoints[5], 11, .8, rand);
             }
         }
 
