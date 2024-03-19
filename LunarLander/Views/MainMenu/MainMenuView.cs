@@ -21,6 +21,7 @@ namespace LunarLander.Views.MainMenu
         private Rectangle m_rectPlanet;
         private MenuStateEnum m_currentSelection = MenuStateEnum.StartGame;
         private KeyboardInput m_inputKeyboard;
+        private KeyboardState m_keyboardStatePrevious;
 
         public override void loadContent(ContentManager contentManager)
         {
@@ -36,7 +37,8 @@ namespace LunarLander.Views.MainMenu
         public override GameStateEnum processInput(GameTime gameTime)
         {
             m_inputKeyboard.Update();
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+            KeyboardState currentState = Keyboard.GetState();
+            if (currentState.IsKeyUp(Keys.Enter) && m_keyboardStatePrevious.IsKeyDown(Keys.Enter))
             {
                 switch (m_currentSelection)
                 {
@@ -65,6 +67,7 @@ namespace LunarLander.Views.MainMenu
 
         public override void update(GameTime gameTime)
         {
+            m_keyboardStatePrevious = Keyboard.GetState();
             m_highScoresDAO.loadHighScores();
             m_keybindingsDAO.loadKeybinds();
         }

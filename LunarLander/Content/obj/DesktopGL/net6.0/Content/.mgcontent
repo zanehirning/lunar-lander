@@ -18,8 +18,10 @@
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Audio/thrusters_sound.mp3</File>
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Audio/explosion_sound.mp3</File>
     <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Audio/success_sound.mp3</File>
+    <File>C:/CS-classes/CS5410/Assignment3-LunarLander/LunarLander/LunarLander/Content/Images/dark-space-background.jpg</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

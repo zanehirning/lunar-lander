@@ -76,7 +76,7 @@ namespace LunarLander.Views.Game
             m_shipSize = m_graphics.PreferredBackBufferWidth / 45;
             m_texShip = contentManager.Load<Texture2D>("Images/ship-2");
             m_rectShip = new Rectangle(50, 50, m_shipSize, m_shipSize);
-            m_texBackground = contentManager.Load<Texture2D>("Images/background-2");
+            m_texBackground = contentManager.Load<Texture2D>("Images/dark-space-background");
             m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
             m_thrustersSound = contentManager.Load<SoundEffect>("Audio/thrusters_sound");
             m_crashSound = contentManager.Load<SoundEffect>("Audio/explosion_sound");
@@ -382,17 +382,17 @@ namespace LunarLander.Views.Game
                             internalRender = renderGameOver;
                         }
                     }
-                    else if (!m_gameOver && m_terrain.isIntersecting(m_points[i], m_points[i+1], m_shipCircle)) 
-                    {
-                        m_particleSystemCrash.shipCrash();
-                        m_crashSoundInstance.Play();
-                        m_gameOver = true;
-                        elapsedCountdown = 3000;
-                        setHighScores();
-                        m_thrustersSoundInstance.Stop();
-                        internalUpdate = updateGameOver;
-                        internalRender = renderGameOver;
-                    }
+                }
+                if (!m_gameOver && m_terrain.isIntersecting(m_points[i], m_points[i+1], m_shipCircle)) 
+                {
+                    m_particleSystemCrash.shipCrash();
+                    m_crashSoundInstance.Play();
+                    m_gameOver = true;
+                    elapsedCountdown = 3000;
+                    setHighScores();
+                    m_thrustersSoundInstance.Stop();
+                    internalUpdate = updateGameOver;
+                    internalRender = renderGameOver;
                 }
             }
             

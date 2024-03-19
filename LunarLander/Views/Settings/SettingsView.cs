@@ -29,6 +29,7 @@ namespace LunarLander.Views.Settings
         private string m_thrustKeybindText = " ";
         private string m_rotateLeftKeybindText = " ";
         private string m_rotateRightKeybindText = " ";
+        private KeyboardState m_keyboardStatePrevious;
 
         public override void loadContent(ContentManager contentManager)
         {
@@ -47,8 +48,8 @@ namespace LunarLander.Views.Settings
 
         public override GameStateEnum processInput(GameTime gameTime)
         {
-            m_inputKeyboard.Update();
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) 
+            KeyboardState currentState = Keyboard.GetState();
+            if (currentState.IsKeyDown(Keys.Escape)) 
             {
                 if (m_isSettingKeybind)
                 {
@@ -62,7 +63,7 @@ namespace LunarLander.Views.Settings
                     return GameStateEnum.MainMenu;
                 }
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+            if (currentState.IsKeyDown(Keys.Enter) && !m_keyboardStatePrevious.IsKeyDown(Keys.Enter))
             {
                 switch (m_currentSelection)
                 {
@@ -70,22 +71,26 @@ namespace LunarLander.Views.Settings
                         {
                             m_isSettingKeybind = true;
                             m_isSettingThrust = true;
+                            m_keyboardStatePrevious = currentState;
                             return GameStateEnum.Settings;
                         };
                     case SettingsStateEnum.RotateLeft: 
                         {
                             m_isSettingKeybind = true;
                             m_isSettingRotateLeft = true;
+                            m_keyboardStatePrevious = currentState;
                             return GameStateEnum.Settings;
                         };
                     case SettingsStateEnum.RotateRight: 
                         {
                             m_isSettingKeybind = true;
                             m_isSettingRotateRight = true;
+                            m_keyboardStatePrevious = currentState;
                             return GameStateEnum.Settings;
                         };
                 }
             }
+            m_keyboardStatePrevious = currentState;
             return GameStateEnum.Settings;
         }
 
@@ -105,6 +110,8 @@ namespace LunarLander.Views.Settings
 
         public override void update(GameTime gameTime)
         {
+
+            m_inputKeyboard.Update();
             m_keybindingsDAO.loadKeybinds();
             if (!m_isSettingKeybind)
             {

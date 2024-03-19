@@ -55,7 +55,7 @@ namespace LunarLander
             {
                 item.Value.loadContent(this.Content);
             }
-            m_texBackground = this.Content.Load<Texture2D>("Images/background-2");
+            m_texBackground = this.Content.Load<Texture2D>("Images/dark-space-background");
             m_rectBackground = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
         }
 
