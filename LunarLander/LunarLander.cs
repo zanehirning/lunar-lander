@@ -25,7 +25,6 @@ namespace LunarLander
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             m_graphics.PreferredBackBufferWidth = 1920;
             m_graphics.PreferredBackBufferHeight = 1080;
             m_graphics.ApplyChanges();
