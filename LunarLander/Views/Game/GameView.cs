@@ -187,13 +187,13 @@ namespace LunarLander.Views.Game
                     new Vector2(m_ship.position.X, m_ship.position.Y),
                     m_rotationDirection,
                     10, 4,
-                    0.2f, 0.05f,
+                    0.3f, 0.05f,
                     300, 50);
             m_particleSystemSmoke = new ParticleSystem(
                     new Vector2(m_ship.position.X, m_ship.position.Y),
                     m_rotationDirection,
                     10, 4,
-                    0.16f, 0.05f,
+                    0.24f, 0.05f,
                     300, 50);
             m_particleSystemCrash = new ParticleSystem(
                     new Vector2(m_ship.position.X, m_ship.position.Y),
